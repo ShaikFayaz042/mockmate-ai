@@ -374,11 +374,36 @@ function StatCard({
   );
 }
 
-function Field({ label, children }: { label: string; children: React.ReactNode }) {
+function Label({ children }: { children: React.ReactNode }) {
   return (
-    <div className="mb-6">
-      <div className="mb-2 font-mono text-[11px] uppercase tracking-widest text-muted-foreground">{label}</div>
+    <div className="ml-1 font-mono text-[11px] uppercase tracking-widest text-muted-foreground">
       {children}
+    </div>
+  );
+}
+
+function Segmented<T extends string>({
+  options, value, onChange,
+}: { options: { value: T; label: string }[]; value: T; onChange: (v: T) => void }) {
+  return (
+    <div className="flex rounded-xl border border-border/60 bg-card/40 p-1">
+      {options.map((o) => {
+        const active = o.value === value;
+        return (
+          <button
+            key={o.value}
+            onClick={() => onChange(o.value)}
+            className={cn(
+              "flex-1 rounded-lg px-3 py-2 text-xs font-medium transition-colors",
+              active
+                ? "bg-muted text-foreground shadow-sm"
+                : "text-muted-foreground hover:text-foreground"
+            )}
+          >
+            {o.label}
+          </button>
+        );
+      })}
     </div>
   );
 }
