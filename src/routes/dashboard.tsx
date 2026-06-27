@@ -1,4 +1,4 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import {
   ArrowUpRight,
@@ -7,23 +7,19 @@ import {
   Code2,
   Coins,
   FileText,
-  History,
-  Home,
-  LogOut,
   Mic,
-  Settings,
   Shuffle,
-  Sparkles,
   Trophy,
   Users,
   Video,
   Zap,
 } from "lucide-react";
 import { toast } from "sonner";
-import { BrandMark } from "@/components/brand-mark";
+import { AppSidebar } from "@/components/app-sidebar";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+
 
 export const Route = createFileRoute("/dashboard")({
   head: () => ({
@@ -103,31 +99,8 @@ function DashboardPage() {
       <div className="pointer-events-none absolute inset-0 bg-grid opacity-30 [mask-image:radial-gradient(ellipse_at_top,black_20%,transparent_70%)]" />
 
       <div className="relative z-10 mx-auto flex min-h-screen max-w-[1400px]">
-        {/* Sidebar */}
-        <aside className="sticky top-0 hidden h-screen w-64 shrink-0 flex-col border-r border-border/60 bg-background/60 px-5 py-6 backdrop-blur-xl lg:flex">
-          <BrandMark />
-          <nav className="mt-10 flex flex-col gap-1 text-sm">
-            <SideLink to="/" icon={Home}>Home</SideLink>
-            <SideLink active icon={BarChart3}>Dashboard</SideLink>
-            <SideLink icon={History}>My interviews</SideLink>
-            <SideLink icon={Settings}>Settings</SideLink>
-            <SideLink icon={Sparkles}>Upgrade plan</SideLink>
-          </nav>
-          <div className="mt-auto space-y-3">
-            <div className="rounded-xl border border-border/60 bg-card/60 p-3">
-              <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                <Coins className="h-3.5 w-3.5" /> Credits
-              </div>
-              <div className="mt-1 font-mono text-lg font-semibold">{stats.credits}</div>
-              <Button size="sm" variant="outline" className="mt-2 w-full rounded-lg" onClick={() => toast("Opening plans…")}>
-                Top up
-              </Button>
-            </div>
-            <button className="flex w-full items-center gap-2 rounded-lg px-2 py-2 text-sm text-muted-foreground hover:bg-muted hover:text-foreground">
-              <LogOut className="h-4 w-4" /> Log out
-            </button>
-          </div>
-        </aside>
+        <AppSidebar active="dashboard" credits={stats.credits} />
+
 
         {/* Main */}
         <main className="flex-1 px-4 py-6 sm:px-8 sm:py-10">
@@ -347,16 +320,6 @@ function DashboardPage() {
   );
 }
 
-function SideLink({
-  children, icon: Icon, active, to,
-}: { children: React.ReactNode; icon: typeof Home; active?: boolean; to?: string }) {
-  const cls = cn(
-    "flex items-center gap-2.5 rounded-lg px-2.5 py-2 transition",
-    active ? "bg-muted text-foreground" : "text-muted-foreground hover:bg-muted/60 hover:text-foreground"
-  );
-  if (to) return <Link to={to} className={cls}><Icon className="h-4 w-4" />{children}</Link>;
-  return <button className={cn(cls, "w-full text-left")}><Icon className="h-4 w-4" />{children}</button>;
-}
 
 function StatCard({
   label, value, icon: Icon, hint, trend, tone,
