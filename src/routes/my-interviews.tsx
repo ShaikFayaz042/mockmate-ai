@@ -18,6 +18,7 @@ import { ThemeToggle } from "@/components/theme-toggle";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
+import { fmtDate } from "@/lib/format";
 
 export const Route = createFileRoute("/my-interviews")({
   head: () => ({
@@ -54,9 +55,7 @@ const modeMeta: Record<Mode, { label: string; icon: typeof Mic }> = {
   video: { label: "Video", icon: Video },
 };
 
-function fmtDate(iso: string) {
-  return new Date(iso).toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" });
-}
+
 function scoreTone(s: number) {
   if (s >= 85) return "text-emerald-500 bg-emerald-500/10 ring-emerald-500/20";
   if (s >= 70) return "text-amber-500 bg-amber-500/10 ring-amber-500/20";
