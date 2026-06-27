@@ -209,31 +209,40 @@ function DashboardPage() {
                 </div>
               </div>
 
-              {/* Contextual control — Duration or Question count */}
+              {/* Question count — preset chips */}
               <div className="space-y-3 pt-1">
                 <div className="flex items-end justify-between">
-                  <Label>{isTimeBased ? "Duration" : "Questions"}</Label>
-                  <span className="font-mono text-sm text-primary">
-                    {isTimeBased ? `${questionCount * 3}:00` : `${questionCount} Q`}
-                  </span>
+                  <Label>Question count</Label>
+                  <span className="font-mono text-sm text-primary">{questionCount} Q</span>
                 </div>
-                <div className="relative">
-                  <input
-                    type="range"
-                    min={5}
-                    max={20}
-                    value={questionCount}
-                    onChange={(e) => setQuestionCount(parseInt(e.target.value))}
-                    className="w-full accent-[color:var(--primary)]"
-                  />
-                </div>
-                <div className="flex justify-between px-1 font-mono text-[10px] text-muted-foreground">
-                  <span>{isTimeBased ? "15m" : "5 Q"}</span>
-                  <span>{isTimeBased ? "30m" : "10 Q"}</span>
-                  <span>{isTimeBased ? "45m" : "15 Q"}</span>
-                  <span>{isTimeBased ? "60m" : "20 Q"}</span>
+                <div className="grid grid-cols-3 gap-2 sm:grid-cols-6">
+                  {[5, 8, 10, 12, 15, 20].map((n) => {
+                    const selected = questionCount === n;
+                    return (
+                      <button
+                        key={n}
+                        onClick={() => setQuestionCount(n)}
+                        className={cn(
+                          "group relative flex flex-col items-center justify-center rounded-xl border bg-card/40 py-3 transition-all",
+                          selected
+                            ? "border-primary/50 bg-muted ring-1 ring-primary/30 shadow-glow"
+                            : "border-border/60 hover:border-border hover:bg-card/60"
+                        )}
+                      >
+                        <span className={cn("text-2xl font-semibold tracking-tight", selected ? "text-foreground" : "text-muted-foreground group-hover:text-foreground")}>
+                          {n}
+                        </span>
+                        <span className="mt-0.5 font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
+                          questions
+                        </span>
+                        {selected && <span className="absolute right-2 top-2 h-1.5 w-1.5 rounded-full bg-primary" />}
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
+
+
 
               {/* CTA */}
               <div className="flex flex-wrap items-center justify-between gap-3 pt-2">
