@@ -55,7 +55,6 @@ const modeMeta: Record<Mode, { label: string; icon: typeof Mic }> = {
   video: { label: "Video", icon: Video },
 };
 
-import { fmtDate } from "@/lib/format";
 
 function scoreTone(s: number) {
   if (s >= 85) return "text-emerald-500 bg-emerald-500/10 ring-emerald-500/20";
