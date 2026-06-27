@@ -151,11 +151,26 @@ function DashboardPage() {
                     value={mode}
                     onChange={(v) => setMode(v as Mode)}
                   />
-                  <Segmented
-                    options={[{ value: "time", label: "Time based (AI per-question)" }, { value: "count", label: "Normal (fixed total time)" }]}
-                    value={isTimeBased ? "time" : "count"}
-                    onChange={(v) => setIsTimeBased(v === "time")}
-                  />
+                  <label className="flex items-center justify-between gap-4 rounded-lg border border-border/60 bg-background/40 px-4 py-3">
+                    <span className="flex flex-col">
+                      <span className="text-sm font-medium">{isTimeBased ? "Time based" : "Normal"}</span>
+                      <span className="text-xs text-muted-foreground">
+                        {isTimeBased ? "AI per-question timing" : "Fixed total time"}
+                      </span>
+                    </span>
+                    <button
+                      type="button"
+                      role="switch"
+                      aria-checked={isTimeBased}
+                      onClick={() => setIsTimeBased(!isTimeBased)}
+                      className={`relative inline-flex h-6 w-11 shrink-0 items-center rounded-full transition-colors ${isTimeBased ? "bg-primary" : "bg-muted"}`}
+                    >
+                      <span
+                        className={`inline-block h-5 w-5 transform rounded-full bg-background shadow transition-transform ${isTimeBased ? "translate-x-5" : "translate-x-0.5"}`}
+                      />
+                    </button>
+                  </label>
+
                 </div>
               </div>
 
