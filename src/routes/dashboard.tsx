@@ -146,11 +146,46 @@ function DashboardPage() {
               <div className="space-y-3">
                 <Label>Session architecture</Label>
                 <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                  <Segmented
-                    options={(Object.keys(modeMeta) as Mode[]).map((m) => ({ value: m, label: modeMeta[m].label }))}
-                    value={mode}
-                    onChange={(v) => setMode(v as Mode)}
-                  />
+                  <div className="relative flex rounded-xl border border-border/60 bg-card/40 p-1">
+                    {(Object.keys(modeMeta) as Mode[]).map((m) => {
+                      const meta = modeMeta[m];
+                      const Icon = meta.icon;
+                      const active = mode === m;
+                      return (
+                        <button
+                          key={m}
+                          type="button"
+                          onClick={() => setMode(m)}
+                          className={cn(
+                            "group relative flex-1 overflow-hidden rounded-lg px-3 py-2.5 text-xs font-medium transition-all duration-300",
+                            active
+                              ? "bg-gradient-to-br from-primary/15 via-primary/5 to-transparent text-foreground shadow-[inset_0_0_0_1px_hsl(var(--primary)/0.35)]"
+                              : "text-muted-foreground hover:text-foreground hover:bg-muted/40"
+                          )}
+                        >
+                          {active && (
+                            <span className="pointer-events-none absolute -inset-px rounded-lg bg-[radial-gradient(circle_at_50%_0%,hsl(var(--primary)/0.25),transparent_70%)]" />
+                          )}
+                          <span className="relative flex items-center justify-center gap-2">
+                            <span className="relative inline-flex">
+                              <Icon className={cn("h-4 w-4 transition-transform duration-300", active && "scale-110")} />
+                              {active && m === "voice" && (
+                                <span className="absolute inset-0 animate-ping rounded-full bg-primary/30" />
+                              )}
+                              {active && m === "video" && (
+                                <span className="absolute -right-1 -top-1 h-1.5 w-1.5 animate-pulse rounded-full bg-rose-500 shadow-[0_0_6px_hsl(var(--destructive))]" />
+                              )}
+                              {active && m === "text" && (
+                                <span className="absolute -right-0.5 top-0 h-1 w-1 animate-pulse rounded-full bg-primary" />
+                              )}
+                            </span>
+                            <span>{meta.label}</span>
+                          </span>
+                        </button>
+                      );
+                    })}
+                  </div>
+
                   <label className="flex items-center justify-between gap-4 rounded-lg border border-border/60 bg-background/40 px-4 py-3">
                     <span className="flex flex-col">
                       <span className="text-sm font-medium">{isTimeBased ? "Time based" : "Normal"}</span>
