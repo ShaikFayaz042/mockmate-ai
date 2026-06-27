@@ -1,4 +1,4 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import {
   ArrowUpRight,
@@ -7,23 +7,19 @@ import {
   Code2,
   Coins,
   FileText,
-  History,
-  Home,
-  LogOut,
   Mic,
-  Settings,
   Shuffle,
-  Sparkles,
   Trophy,
   Users,
   Video,
   Zap,
 } from "lucide-react";
 import { toast } from "sonner";
-import { BrandMark } from "@/components/brand-mark";
+import { AppSidebar } from "@/components/app-sidebar";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+
 
 export const Route = createFileRoute("/dashboard")({
   head: () => ({
