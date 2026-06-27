@@ -2,9 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import {
   ArrowLeft,
-  Briefcase,
   Camera,
-  Check,
   FileText,
   KeyRound,
   Mail,
