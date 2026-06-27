@@ -103,31 +103,8 @@ function DashboardPage() {
       <div className="pointer-events-none absolute inset-0 bg-grid opacity-30 [mask-image:radial-gradient(ellipse_at_top,black_20%,transparent_70%)]" />
 
       <div className="relative z-10 mx-auto flex min-h-screen max-w-[1400px]">
-        {/* Sidebar */}
-        <aside className="sticky top-0 hidden h-screen w-64 shrink-0 flex-col border-r border-border/60 bg-background/60 px-5 py-6 backdrop-blur-xl lg:flex">
-          <BrandMark />
-          <nav className="mt-10 flex flex-col gap-1 text-sm">
-            <SideLink to="/" icon={Home}>Home</SideLink>
-            <SideLink active icon={BarChart3}>Dashboard</SideLink>
-            <SideLink icon={History}>My interviews</SideLink>
-            <SideLink icon={Settings}>Settings</SideLink>
-            <SideLink icon={Sparkles}>Upgrade plan</SideLink>
-          </nav>
-          <div className="mt-auto space-y-3">
-            <div className="rounded-xl border border-border/60 bg-card/60 p-3">
-              <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                <Coins className="h-3.5 w-3.5" /> Credits
-              </div>
-              <div className="mt-1 font-mono text-lg font-semibold">{stats.credits}</div>
-              <Button size="sm" variant="outline" className="mt-2 w-full rounded-lg" onClick={() => toast("Opening plans…")}>
-                Top up
-              </Button>
-            </div>
-            <button className="flex w-full items-center gap-2 rounded-lg px-2 py-2 text-sm text-muted-foreground hover:bg-muted hover:text-foreground">
-              <LogOut className="h-4 w-4" /> Log out
-            </button>
-          </div>
-        </aside>
+        <AppSidebar active="dashboard" credits={stats.credits} />
+
 
         {/* Main */}
         <main className="flex-1 px-4 py-6 sm:px-8 sm:py-10">
