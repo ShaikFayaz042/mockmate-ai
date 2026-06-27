@@ -201,10 +201,9 @@ function SettingsPage() {
 
               {/* Appearance */}
               <Card id="appearance" title="Appearance" desc="Pick the theme that suits your eyes." icon={Monitor}>
-                <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-                  <ThemeOption label="Light"  active={theme === "light"}  onClick={() => setTheme("light")}  icon={Sun} />
-                  <ThemeOption label="Dark"   active={theme === "dark"}   onClick={() => setTheme("dark")}   icon={Moon} />
-                  <ThemeOption label="System" active={theme === "system"} onClick={() => setTheme("system")} icon={Monitor} />
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                  <ThemeOption label="Light" active={theme === "light"} onClick={() => setTheme("light")} icon={Sun} />
+                  <ThemeOption label="Dark"  active={theme === "dark"}  onClick={() => setTheme("dark")}  icon={Moon} />
                 </div>
                 <p className="mt-4 font-mono text-[11px] uppercase tracking-widest text-muted-foreground">Density</p>
                 <div className="mt-2 inline-flex rounded-full border border-border/70 bg-muted/40 p-1">
