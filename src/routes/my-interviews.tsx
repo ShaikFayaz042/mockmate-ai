@@ -170,8 +170,10 @@ function MyInterviewsPage() {
                         </td>
                         <td className="px-6 py-3.5 text-right">
                           <div className="flex justify-end gap-1">
-                            <Button variant="ghost" size="sm" className="rounded-full" onClick={() => toast("Opening report…")}>
-                              View <ArrowUpRight className="ml-1 h-3.5 w-3.5" />
+                            <Button asChild variant="ghost" size="sm" className="rounded-full">
+                              <Link to="/report/$id" params={{ id: row.id }}>
+                                View report <ArrowUpRight className="ml-1 h-3.5 w-3.5" />
+                              </Link>
                             </Button>
                             <Button variant="ghost" size="icon" className="rounded-full text-muted-foreground hover:text-destructive" onClick={() => toast("Deleted", { description: row.id })}>
                               <Trash2 className="h-3.5 w-3.5" />
