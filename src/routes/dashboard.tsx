@@ -320,16 +320,6 @@ function DashboardPage() {
   );
 }
 
-function SideLink({
-  children, icon: Icon, active, to,
-}: { children: React.ReactNode; icon: typeof Home; active?: boolean; to?: string }) {
-  const cls = cn(
-    "flex items-center gap-2.5 rounded-lg px-2.5 py-2 transition",
-    active ? "bg-muted text-foreground" : "text-muted-foreground hover:bg-muted/60 hover:text-foreground"
-  );
-  if (to) return <Link to={to} className={cls}><Icon className="h-4 w-4" />{children}</Link>;
-  return <button className={cn(cls, "w-full text-left")}><Icon className="h-4 w-4" />{children}</button>;
-}
 
 function StatCard({
   label, value, icon: Icon, hint, trend, tone,
