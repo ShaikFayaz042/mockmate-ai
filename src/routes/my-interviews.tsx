@@ -18,6 +18,7 @@ import { ThemeToggle } from "@/components/theme-toggle";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
+import { fmtDate } from "@/lib/format";
 
 export const Route = createFileRoute("/my-interviews")({
   head: () => ({
