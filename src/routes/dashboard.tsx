@@ -59,9 +59,8 @@ const categoryMeta: Record<Category, { label: string; icon: typeof Code2; desc: 
   mix:       { label: "Mixed",     icon: Shuffle, desc: "Technical + HR blend" },
 };
 
-function fmtDate(iso: string) {
-  return new Date(iso).toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" });
-}
+import { fmtDate } from "@/lib/format";
+
 function scoreTone(s: number) {
   if (s >= 85) return "text-emerald-500 bg-emerald-500/10 ring-emerald-500/20";
   if (s >= 70) return "text-amber-500 bg-amber-500/10 ring-amber-500/20";
