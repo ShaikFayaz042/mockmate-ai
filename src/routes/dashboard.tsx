@@ -242,7 +242,7 @@ function DashboardPage() {
                 </div>
               </div>
 
-              </div>
+
 
               {/* CTA */}
               <div className="flex flex-wrap items-center justify-between gap-3 pt-2">
