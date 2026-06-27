@@ -129,101 +129,126 @@ function DashboardPage() {
             <StatCard label="Credits left"    value={stats.credits}    icon={Coins}    hint={`~${Math.floor(stats.credits / 25)} text rounds`} trend="Pro plan" tone="violet" />
           </section>
 
-          {/* Interview customization */}
-          <section className="mb-10 rounded-2xl border border-border/60 bg-card/60 p-6 shadow-elegant backdrop-blur-xl sm:p-8">
-            <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
+          {/* Interview customization — monolithic dark glass */}
+          <section className="mb-10 overflow-hidden rounded-2xl border border-border/60 bg-card/70 p-6 shadow-elegant backdrop-blur-xl sm:p-8">
+            <div className="mb-8 flex flex-wrap items-end justify-between gap-3">
               <div>
                 <h2 className="text-lg font-semibold tracking-tight">Customize your interview</h2>
-                <p className="text-sm text-muted-foreground">Choose the shape of your next practice round.</p>
+                <p className="text-sm text-muted-foreground">Configure your session parameters for optimal performance.</p>
               </div>
-              <span className="font-mono text-xs text-muted-foreground">
-                Cost: <span className="text-foreground">{cost} credits</span>
+              <span className="font-mono text-[11px] uppercase tracking-widest text-muted-foreground">
+                Cost <span className="ml-1 text-foreground">{cost} cr</span>
               </span>
             </div>
 
-            <Field label="Category">
-              <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-                {(Object.keys(categoryMeta) as Category[]).map((c) => {
-                  const m = categoryMeta[c];
-                  const Icon = m.icon;
-                  return (
-                    <OptionCard key={c} selected={category === c} onClick={() => setCategory(c)}>
-                      <Icon className="h-5 w-5" />
-                      <div className="mt-2 font-medium">{m.label}</div>
-                      <div className="text-xs text-muted-foreground">{m.desc}</div>
-                    </OptionCard>
-                  );
-                })}
+            <div className="space-y-9">
+              {/* Unified segmented toggles: Mode + Session type */}
+              <div className="space-y-3">
+                <Label>Session architecture</Label>
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                  <Segmented
+                    options={(Object.keys(modeMeta) as Mode[]).map((m) => ({ value: m, label: modeMeta[m].label }))}
+                    value={mode}
+                    onChange={(v) => setMode(v as Mode)}
+                  />
+                  <Segmented
+                    options={[{ value: "time", label: "Time-based" }, { value: "count", label: "Question count" }]}
+                    value={isTimeBased ? "time" : "count"}
+                    onChange={(v) => setIsTimeBased(v === "time")}
+                  />
+                </div>
               </div>
-            </Field>
 
-            <Field label="Difficulty">
-              <div className="inline-flex rounded-full border border-border/70 bg-muted/40 p-1">
-                {(["easy", "medium", "hard"] as Difficulty[]).map((d) => (
-                  <button
-                    key={d}
-                    onClick={() => setDifficulty(d)}
-                    className={cn(
-                      "rounded-full px-4 py-1.5 text-sm font-medium capitalize transition",
-                      difficulty === d ? "bg-background text-foreground shadow-elegant" : "text-muted-foreground hover:text-foreground"
-                    )}
-                  >
-                    {d}
-                  </button>
-                ))}
+              {/* Category */}
+              <div className="space-y-3">
+                <Label>Domain category</Label>
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+                  {(Object.keys(categoryMeta) as Category[]).map((c) => {
+                    const m = categoryMeta[c];
+                    const Icon = m.icon;
+                    const selected = category === c;
+                    return (
+                      <button
+                        key={c}
+                        onClick={() => setCategory(c)}
+                        className={cn(
+                          "group relative flex flex-col items-start rounded-xl border bg-card/40 p-4 text-left transition-all",
+                          selected
+                            ? "border-primary/50 bg-card/70 ring-1 ring-primary/30 shadow-glow"
+                            : "border-border/60 hover:border-border hover:bg-card/60"
+                        )}
+                      >
+                        <Icon className={cn("h-4 w-4 transition-colors", selected ? "text-primary" : "text-muted-foreground")} />
+                        <div className="mt-2 text-sm font-medium">{m.label}</div>
+                        <div className="mt-0.5 text-[11px] text-muted-foreground">{m.desc}</div>
+                        {selected && <span className="absolute right-3 top-3 h-2 w-2 rounded-full bg-primary shadow-glow" />}
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
-            </Field>
 
-            <Field label="Mode">
-              <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-                {(Object.keys(modeMeta) as Mode[]).map((m) => {
-                  const meta = modeMeta[m];
-                  const Icon = meta.icon;
-                  return (
-                    <OptionCard key={m} selected={mode === m} onClick={() => setMode(m)}>
-                      <div className="flex w-full items-center justify-between">
-                        <Icon className="h-5 w-5" />
-                        <span className="font-mono text-[11px] text-muted-foreground">{meta.cost} cr</span>
-                      </div>
-                      <div className="mt-2 font-medium">{meta.label}</div>
-                      <div className="text-xs text-muted-foreground">{meta.desc}</div>
-                    </OptionCard>
-                  );
-                })}
+              {/* Difficulty */}
+              <div className="space-y-3">
+                <Label>Experience level</Label>
+                <div className="grid grid-cols-3 gap-2">
+                  {(["easy", "medium", "hard"] as Difficulty[]).map((d) => (
+                    <button
+                      key={d}
+                      onClick={() => setDifficulty(d)}
+                      className={cn(
+                        "rounded-lg border bg-card/40 py-2.5 text-xs font-medium capitalize transition-all",
+                        difficulty === d
+                          ? "border-border bg-muted text-foreground"
+                          : "border-border/60 text-muted-foreground hover:border-border hover:text-foreground"
+                      )}
+                    >
+                      {d}
+                    </button>
+                  ))}
+                </div>
               </div>
-            </Field>
 
-            <Field label="Timer mode">
-              <div className="flex flex-wrap gap-2">
-                <Pill active={isTimeBased} onClick={() => setIsTimeBased(true)}>Per-question (AI)</Pill>
-                <Pill active={!isTimeBased} onClick={() => setIsTimeBased(false)}>Fixed 30 min total</Pill>
+              {/* Contextual control — Duration or Question count */}
+              <div className="space-y-3 pt-1">
+                <div className="flex items-end justify-between">
+                  <Label>{isTimeBased ? "Duration" : "Questions"}</Label>
+                  <span className="font-mono text-sm text-primary">
+                    {isTimeBased ? `${questionCount * 3}:00` : `${questionCount} Q`}
+                  </span>
+                </div>
+                <div className="relative">
+                  <input
+                    type="range"
+                    min={5}
+                    max={20}
+                    value={questionCount}
+                    onChange={(e) => setQuestionCount(parseInt(e.target.value))}
+                    className="w-full accent-[color:var(--primary)]"
+                  />
+                </div>
+                <div className="flex justify-between px-1 font-mono text-[10px] text-muted-foreground">
+                  <span>{isTimeBased ? "15m" : "5 Q"}</span>
+                  <span>{isTimeBased ? "30m" : "10 Q"}</span>
+                  <span>{isTimeBased ? "45m" : "15 Q"}</span>
+                  <span>{isTimeBased ? "60m" : "20 Q"}</span>
+                </div>
               </div>
-            </Field>
 
-            <Field label={`Questions · ${questionCount}`}>
-              <input
-                type="range"
-                min={5}
-                max={20}
-                value={questionCount}
-                onChange={(e) => setQuestionCount(parseInt(e.target.value))}
-                className="w-full accent-[color:var(--primary)]"
-              />
-              <div className="mt-1 flex justify-between font-mono text-[11px] text-muted-foreground">
-                <span>5</span><span>10</span><span>15</span><span>20</span>
+              {/* CTA */}
+              <div className="flex flex-wrap items-center justify-between gap-3 pt-2">
+                {insufficient ? (
+                  <p className="text-sm text-destructive">Insufficient credits — upgrade to continue.</p>
+                ) : (
+                  <p className="text-sm text-muted-foreground">
+                    You'll have <span className="font-mono text-foreground">{user.creditsRemaining - cost}</span> credits remaining.
+                  </p>
+                )}
+                <Button size="lg" disabled={insufficient || loading} onClick={handleStart} className="rounded-xl px-6 shadow-glow">
+                  <Zap className="mr-1.5 h-4 w-4" />
+                  {loading ? "Starting…" : "Begin session"}
+                </Button>
               </div>
-            </Field>
-
-            <div className="mt-2 flex flex-wrap items-center justify-between gap-3">
-              {insufficient ? (
-                <p className="text-sm text-destructive">Insufficient credits — upgrade your plan to continue.</p>
-              ) : (
-                <p className="text-sm text-muted-foreground">You'll have <span className="font-mono text-foreground">{user.creditsRemaining - cost}</span> credits after this round.</p>
-              )}
-              <Button size="lg" disabled={insufficient || loading} onClick={handleStart} className="rounded-full px-6 shadow-glow">
-                <Zap className="mr-1.5 h-4 w-4" />
-                {loading ? "Starting…" : "Start interview"}
-              </Button>
             </div>
           </section>
 
