@@ -196,22 +196,24 @@ function MyInterviewsPage() {
                 const md = modeMeta[row.mode as Mode];
                 const Icon = md.icon;
                 return (
-                  <li key={row.id} className="flex items-center justify-between px-5 py-4">
-                    <div className="min-w-0">
-                      <div className="flex items-center gap-2 text-sm font-medium">
-                        {cat.label}
-                        <span className="text-muted-foreground">·</span>
-                        <span className="inline-flex items-center gap-1 text-muted-foreground">
-                          <Icon className="h-3.5 w-3.5" />{md.label}
-                        </span>
+                  <li key={row.id}>
+                    <Link to="/report/$id" params={{ id: row.id }} className="flex items-center justify-between px-5 py-4 transition hover:bg-muted/40">
+                      <div className="min-w-0">
+                        <div className="flex items-center gap-2 text-sm font-medium">
+                          {cat.label}
+                          <span className="text-muted-foreground">·</span>
+                          <span className="inline-flex items-center gap-1 text-muted-foreground">
+                            <Icon className="h-3.5 w-3.5" />{md.label}
+                          </span>
+                        </div>
+                        <div className="mt-0.5 font-mono text-xs text-muted-foreground">
+                          {fmtDate(row.date)} · {row.questions} Q · {row.duration}m
+                        </div>
                       </div>
-                      <div className="mt-0.5 font-mono text-xs text-muted-foreground">
-                        {fmtDate(row.date)} · {row.questions} Q · {row.duration}m
-                      </div>
-                    </div>
-                    <span className={cn("inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ring-1 ring-inset", scoreTone(row.overallScore))}>
-                      {row.overallScore}%
-                    </span>
+                      <span className={cn("inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ring-1 ring-inset", scoreTone(row.overallScore))}>
+                        {row.overallScore}%
+                      </span>
+                    </Link>
                   </li>
                 );
               })}
