@@ -88,10 +88,16 @@ function DashboardPage() {
 
   const handleStart = async () => {
     setLoading(true);
-    await new Promise((r) => setTimeout(r, 700));
+    await new Promise((r) => setTimeout(r, 500));
     setLoading(false);
     toast.success("Interview ready", { description: `${categoryMeta[category].label} · ${difficulty} · ${questionCount} questions` });
+    navigate({
+      to: "/interview/$id",
+      params: { id: "new" },
+      search: { mode, category, difficulty, questions: questionCount, timer: isTimeBased ? "per_question" : "total" },
+    });
   };
+
 
   return (
     <div className="relative min-h-screen bg-background text-foreground">
