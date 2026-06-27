@@ -152,7 +152,7 @@ function DashboardPage() {
                     onChange={(v) => setMode(v as Mode)}
                   />
                   <Segmented
-                    options={[{ value: "time", label: "Time-based" }, { value: "count", label: "Question count" }]}
+                    options={[{ value: "time", label: "Time based (AI per-question)" }, { value: "count", label: "Normal (fixed total time)" }]}
                     value={isTimeBased ? "time" : "count"}
                     onChange={(v) => setIsTimeBased(v === "time")}
                   />
