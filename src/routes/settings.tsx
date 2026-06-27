@@ -1,80 +1,165 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { useEffect, useRef, useState } from "react";
 import {
-  Bell,
+  ArrowLeft,
   Briefcase,
   Camera,
   Check,
+  FileText,
   KeyRound,
   Mail,
-  Monitor,
-  Moon,
   Save,
   Shield,
-  Sun,
+  Sparkles,
   Trash2,
+  Upload,
   User,
+  X,
 } from "lucide-react";
 import { toast } from "sonner";
-import { z } from "zod";
 import { AppSidebar } from "@/components/app-sidebar";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useTheme } from "@/hooks/use-theme";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/settings")({
   head: () => ({
     meta: [
-      { title: "Settings · MockMate" },
-      { name: "description", content: "Manage your MockMate account, profile, appearance, and notification preferences." },
+      { title: "Account Settings · MockMate" },
+      { name: "description", content: "Manage your MockMate profile, resume, password, and account." },
     ],
   }),
   component: SettingsPage,
 });
 
-const profileSchema = z.object({
-  name: z.string().trim().min(1, "Name is required").max(80),
-  email: z.string().trim().email("Enter a valid email").max(255),
-  targetRole: z.string().trim().max(80).optional(),
-  experience: z.string().trim().max(40).optional(),
-  skills: z.string().trim().max(240).optional(),
-  bio: z.string().trim().max(280).optional(),
-});
+type TabKey = "profile" | "resume" | "password" | "danger";
+
+const CURRENT_ROLES = ["Student", "Fresher", "Working Professional"];
+const EXPERIENCE_LEVELS = ["0-1 year", "1-3 years", "3-5 years", "5+ years"];
+const COMPANY_TYPES = [
+  { value: "general",     label: "General IT Company (no preference)" },
+  { value: "Startup",     label: "Startup" },
+  { value: "MNC",         label: "MNC" },
+  { value: "FAANG",       label: "FAANG" },
+  { value: "Government",  label: "Government" },
+  { value: "other",       label: "Other (specify below)" },
+];
+
+type ResumeParsed = {
+  skills: string[];
+  experience: string[];
+  education: string[];
+  projects: string[];
+};
 
 function SettingsPage() {
-  const { theme, setTheme } = useTheme();
+  const [activeTab, setActiveTab] = useState<TabKey>("profile");
+  const [loading, setLoading] = useState(false);
+  const [uploadingResume, setUploadingResume] = useState(false);
+  const fileRef = useRef<HTMLInputElement>(null);
 
   const [profile, setProfile] = useState({
     name: "Fayaz Shaik",
     email: "fayaz@mockmate.dev",
-    targetRole: "Full-stack Engineer",
-    experience: "2 years",
-    skills: "React, Node.js, MongoDB, System Design",
-    bio: "Final year CS student preparing for SDE-1 roles.",
+    phone: "",
+    location: "",
+    currentRole: "",
+    targetRole: "",
+    experienceLevel: "",
+    skills: ["React", "Node.js", "MongoDB"] as string[],
+    skillInput: "",
+    targetCompanyType: "general",
+    customCompany: "",
   });
-  const [saving, setSaving] = useState(false);
+  const [resumeParsed, setResumeParsed] = useState<ResumeParsed | null>(null);
+  const [resumeUrl, setResumeUrl] = useState<string | null>(null);
 
-  const [notif, setNotif] = useState({
-    productUpdates: true,
-    interviewReminders: true,
-    weeklyReport: false,
-    marketing: false,
-  });
+  const [passwords, setPasswords] = useState({ current: "", new: "", confirm: "" });
 
-  const handleSave = async () => {
-    const parsed = profileSchema.safeParse(profile);
-    if (!parsed.success) {
-      toast.error(parsed.error.issues[0]?.message ?? "Please check your inputs");
+  // Plan (mock)
+  const plan = "Free";
+  const creditsRemaining = 100;
+
+  // ---- Profile actions ----
+  const addSkill = () => {
+    const skill = profile.skillInput.trim();
+    if (!skill) return;
+    if (profile.skills.includes(skill)) {
+      toast.error("Skill already added");
       return;
     }
-    setSaving(true);
-    await new Promise((r) => setTimeout(r, 600));
-    setSaving(false);
-    toast.success("Profile updated");
+    setProfile({ ...profile, skills: [...profile.skills, skill], skillInput: "" });
   };
+  const removeSkill = (skill: string) =>
+    setProfile({ ...profile, skills: profile.skills.filter((s) => s !== skill) });
+
+  const saveProfile = async () => {
+    if (!profile.name.trim()) return toast.error("Name is required");
+    setLoading(true);
+    await new Promise((r) => setTimeout(r, 600));
+    setLoading(false);
+    toast.success("Profile updated successfully!");
+  };
+
+  // ---- Resume ----
+  const handleResumeUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.type !== "application/pdf") {
+      toast.error("Please upload a PDF file");
+      e.target.value = "";
+      return;
+    }
+    setUploadingResume(true);
+    await new Promise((r) => setTimeout(r, 900));
+    const mockParsed: ResumeParsed = {
+      skills: ["TypeScript", "System Design", "PostgreSQL"],
+      experience: ["Frontend Intern — Acme · 2024", "Open-source contributor · 2023"],
+      education: ["B.Tech CSE — VIT, 2026"],
+      projects: ["MockMate — AI interviewer", "Realtime chat app"],
+    };
+    const merged = Array.from(new Set([...profile.skills, ...mockParsed.skills]));
+    setProfile((p) => ({ ...p, skills: merged }));
+    setResumeParsed(mockParsed);
+    setResumeUrl(`/uploads/${file.name}`);
+    setUploadingResume(false);
+    e.target.value = "";
+    toast.success("Resume parsed successfully!");
+  };
+
+  // ---- Password ----
+  const updatePassword = async () => {
+    if (passwords.new !== passwords.confirm) return toast.error("New passwords do not match");
+    if (passwords.new.length < 6) return toast.error("Password must be at least 6 characters");
+    if (!passwords.current) return toast.error("Enter your current password");
+    setLoading(true);
+    await new Promise((r) => setTimeout(r, 600));
+    setLoading(false);
+    setPasswords({ current: "", new: "", confirm: "" });
+    toast.success("Password changed successfully!");
+  };
+
+  // ---- Delete ----
+  const [confirmDelete, setConfirmDelete] = useState(false);
+  const deleteAccount = async () => {
+    if (!confirmDelete) {
+      setConfirmDelete(true);
+      toast("Click delete again to confirm", { description: "This action cannot be undone." });
+      return;
+    }
+    setLoading(true);
+    await new Promise((r) => setTimeout(r, 600));
+    setLoading(false);
+    setConfirmDelete(false);
+    toast.success("Account deleted (demo).");
+  };
+  useEffect(() => {
+    if (!confirmDelete) return;
+    const t = setTimeout(() => setConfirmDelete(false), 4000);
+    return () => clearTimeout(t);
+  }, [confirmDelete]);
 
   return (
     <div className="relative min-h-screen bg-background text-foreground">
@@ -85,255 +170,291 @@ function SettingsPage() {
         <AppSidebar active="settings" />
 
         <main className="flex-1 px-4 py-6 sm:px-8 sm:py-10">
+          {/* Header */}
           <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
             <div>
               <p className="font-mono text-xs uppercase tracking-widest text-muted-foreground">Account</p>
-              <h1 className="mt-1 text-3xl font-semibold tracking-tight sm:text-4xl">Settings</h1>
-              <p className="mt-1 text-sm text-muted-foreground">Manage your profile, appearance, and notifications.</p>
+              <h1 className="mt-1 bg-gradient-to-r from-primary to-violet-400 bg-clip-text text-3xl font-semibold tracking-tight text-transparent sm:text-4xl">
+                Account Settings
+              </h1>
+              <p className="mt-1 text-sm text-muted-foreground">Manage your profile and preferences.</p>
             </div>
-            <div className="flex items-center gap-2">
-              <ThemeToggle />
-              <Button onClick={handleSave} disabled={saving} className="rounded-full shadow-glow">
-                <Save className="mr-1.5 h-4 w-4" /> {saving ? "Saving…" : "Save changes"}
-              </Button>
-            </div>
+            <ThemeToggle />
           </div>
 
-          <div className="grid gap-6 lg:grid-cols-[260px_1fr]">
-            {/* Section nav */}
-            <nav className="sticky top-6 hidden h-fit flex-col gap-1 rounded-2xl border border-border/60 bg-card/60 p-2 text-sm shadow-elegant backdrop-blur-xl lg:flex">
-              <SectionLink href="#account" icon={User} label="Account" />
-              <SectionLink href="#profile" icon={Briefcase} label="Interview profile" />
-              <SectionLink href="#appearance" icon={Monitor} label="Appearance" />
-              <SectionLink href="#notifications" icon={Bell} label="Notifications" />
-              <SectionLink href="#security" icon={Shield} label="Security" />
-              <SectionLink href="#danger" icon={Trash2} label="Danger zone" />
-            </nav>
+          {/* Identity card */}
+          <section className="mb-6 flex flex-wrap items-center gap-5 rounded-2xl border border-border/60 bg-card/60 p-5 shadow-elegant backdrop-blur-xl">
+            <div className="relative">
+              <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-primary/30 to-violet-500/20 text-lg font-semibold text-foreground ring-1 ring-border/60">
+                {profile.name.split(" ").map((n) => n[0]).join("").slice(0, 2).toUpperCase()}
+              </div>
+              <button
+                onClick={() => toast("Avatar upload coming soon")}
+                className="absolute -bottom-1 -right-1 inline-flex h-7 w-7 items-center justify-center rounded-full border border-border bg-background text-muted-foreground shadow-elegant hover:text-foreground"
+                aria-label="Change avatar"
+              >
+                <Camera className="h-3.5 w-3.5" />
+              </button>
+            </div>
+            <div className="min-w-0 flex-1">
+              <div className="truncate text-lg font-semibold tracking-tight">{profile.name || "—"}</div>
+              <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
+                <Mail className="h-3.5 w-3.5" /> {profile.email}
+              </div>
+            </div>
+            <span className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-2 py-0.5 font-mono text-[10px] uppercase tracking-wider text-primary ring-1 ring-inset ring-primary/20">
+              <Sparkles className="h-3 w-3" /> {plan} plan
+            </span>
+          </section>
 
-            <div className="space-y-6">
-              {/* Account */}
-              <Card id="account" title="Account" desc="Your public identity on MockMate." icon={User}>
-                <div className="flex items-center gap-5">
-                  <div className="relative">
-                    <div className="flex h-20 w-20 items-center justify-center rounded-2xl bg-gradient-to-br from-primary/30 to-violet-500/20 text-xl font-semibold text-foreground ring-1 ring-border/60">
-                      {profile.name.split(" ").map((n) => n[0]).join("").slice(0, 2)}
-                    </div>
-                    <button
-                      onClick={() => toast("Upload coming soon")}
-                      className="absolute -bottom-1 -right-1 inline-flex h-7 w-7 items-center justify-center rounded-full border border-border bg-background text-muted-foreground shadow-elegant hover:text-foreground"
-                      aria-label="Change avatar"
-                    >
-                      <Camera className="h-3.5 w-3.5" />
-                    </button>
-                  </div>
-                  <div className="min-w-0">
-                    <div className="text-lg font-semibold tracking-tight">{profile.name}</div>
-                    <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
-                      <Mail className="h-3.5 w-3.5" /> {profile.email}
-                    </div>
-                    <span className="mt-2 inline-flex items-center gap-1 rounded-full bg-primary/10 px-2 py-0.5 font-mono text-[10px] uppercase tracking-wider text-primary ring-1 ring-inset ring-primary/20">
-                      <Check className="h-3 w-3" /> Pro plan
-                    </span>
-                  </div>
-                </div>
+          {/* Tabs */}
+          <div className="mb-6 flex flex-wrap gap-1 border-b border-border/60">
+            <Tab active={activeTab === "profile"}  onClick={() => setActiveTab("profile")}  icon={User}>Profile Info</Tab>
+            <Tab active={activeTab === "resume"}   onClick={() => setActiveTab("resume")}   icon={FileText}>Resume</Tab>
+            <Tab active={activeTab === "password"} onClick={() => setActiveTab("password")} icon={KeyRound}>Change Password</Tab>
+            <Tab active={activeTab === "danger"}   onClick={() => setActiveTab("danger")}   icon={Shield} tone="destructive">Danger Zone</Tab>
+          </div>
 
-                <div className="mt-6 grid gap-4 sm:grid-cols-2">
-                  <FieldRow label="Full name">
+          {/* Profile */}
+          {activeTab === "profile" && (
+            <Panel>
+              <div className="grid gap-4 sm:grid-cols-2">
+                <FieldRow label="Full name">
+                  <Input value={profile.name} onChange={(e) => setProfile({ ...profile, name: e.target.value })} maxLength={80} />
+                </FieldRow>
+                <FieldRow label="Phone">
+                  <Input type="tel" value={profile.phone} onChange={(e) => setProfile({ ...profile, phone: e.target.value })} maxLength={20} placeholder="+91 98765 43210" />
+                </FieldRow>
+                <FieldRow label="Location">
+                  <Input value={profile.location} onChange={(e) => setProfile({ ...profile, location: e.target.value })} maxLength={80} placeholder="City, Country" />
+                </FieldRow>
+                <FieldRow label="Current role">
+                  <Select value={profile.currentRole} onChange={(v) => setProfile({ ...profile, currentRole: v })} options={[{ value: "", label: "Select" }, ...CURRENT_ROLES.map((r) => ({ value: r, label: r }))]} />
+                </FieldRow>
+                <FieldRow label="Target role">
+                  <Input value={profile.targetRole} onChange={(e) => setProfile({ ...profile, targetRole: e.target.value })} maxLength={80} placeholder="Frontend Developer, Data Analyst, etc." />
+                </FieldRow>
+                <FieldRow label="Experience level">
+                  <Select value={profile.experienceLevel} onChange={(v) => setProfile({ ...profile, experienceLevel: v })} options={[{ value: "", label: "Select" }, ...EXPERIENCE_LEVELS.map((r) => ({ value: r, label: r }))]} />
+                </FieldRow>
+                <FieldRow label="Skills" className="sm:col-span-2">
+                  <div className="flex gap-2">
                     <Input
-                      value={profile.name}
-                      onChange={(e) => setProfile({ ...profile, name: e.target.value })}
-                      maxLength={80}
-                    />
-                  </FieldRow>
-                  <FieldRow label="Email">
-                    <Input
-                      type="email"
-                      value={profile.email}
-                      onChange={(e) => setProfile({ ...profile, email: e.target.value })}
-                      maxLength={255}
-                    />
-                  </FieldRow>
-                </div>
-              </Card>
-
-              {/* Profile */}
-              <Card id="profile" title="Interview profile" desc="Helps the AI tailor questions to your goals." icon={Briefcase}>
-                <div className="grid gap-4 sm:grid-cols-2">
-                  <FieldRow label="Target role">
-                    <Input
-                      value={profile.targetRole}
-                      onChange={(e) => setProfile({ ...profile, targetRole: e.target.value })}
-                      placeholder="e.g. Frontend Engineer"
-                      maxLength={80}
-                    />
-                  </FieldRow>
-                  <FieldRow label="Experience">
-                    <Input
-                      value={profile.experience}
-                      onChange={(e) => setProfile({ ...profile, experience: e.target.value })}
-                      placeholder="e.g. 3 years"
+                      value={profile.skillInput}
+                      onChange={(e) => setProfile({ ...profile, skillInput: e.target.value })}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") { e.preventDefault(); addSkill(); }
+                      }}
+                      placeholder="Add a skill…"
                       maxLength={40}
                     />
-                  </FieldRow>
-                  <FieldRow label="Skills" className="sm:col-span-2">
-                    <Input
-                      value={profile.skills}
-                      onChange={(e) => setProfile({ ...profile, skills: e.target.value })}
-                      placeholder="Comma-separated"
-                      maxLength={240}
-                    />
-                  </FieldRow>
-                  <FieldRow label="Short bio" className="sm:col-span-2">
-                    <textarea
-                      value={profile.bio}
-                      onChange={(e) => setProfile({ ...profile, bio: e.target.value })}
-                      rows={3}
-                      maxLength={280}
-                      placeholder="One or two sentences about you."
-                      className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
-                    />
-                    <div className="mt-1 text-right font-mono text-[10px] text-muted-foreground">
-                      {profile.bio?.length ?? 0}/280
+                    <Button onClick={addSkill} className="rounded-md">Add</Button>
+                  </div>
+                  {profile.skills.length > 0 && (
+                    <div className="mt-3 flex flex-wrap gap-1.5">
+                      {profile.skills.map((skill) => (
+                        <span key={skill} className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-2.5 py-1 text-xs text-primary ring-1 ring-inset ring-primary/20">
+                          {skill}
+                          <button onClick={() => removeSkill(skill)} className="rounded-full p-0.5 hover:bg-primary/20" aria-label={`Remove ${skill}`}>
+                            <X className="h-3 w-3" />
+                          </button>
+                        </span>
+                      ))}
                     </div>
-                  </FieldRow>
-                </div>
-              </Card>
-
-              {/* Appearance */}
-              <Card id="appearance" title="Appearance" desc="Pick the theme that suits your eyes." icon={Monitor}>
-                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                  <ThemeOption label="Light" active={theme === "light"} onClick={() => setTheme("light")} icon={Sun} />
-                  <ThemeOption label="Dark"  active={theme === "dark"}  onClick={() => setTheme("dark")}  icon={Moon} />
-                </div>
-                <p className="mt-4 font-mono text-[11px] uppercase tracking-widest text-muted-foreground">Density</p>
-                <div className="mt-2 inline-flex rounded-full border border-border/70 bg-muted/40 p-1">
-                  {["Comfortable", "Compact"].map((d, i) => (
-                    <button
-                      key={d}
-                      onClick={() => toast(`Density: ${d}`)}
-                      className={cn(
-                        "rounded-full px-4 py-1.5 text-sm font-medium transition",
-                        i === 0 ? "bg-background text-foreground shadow-elegant" : "text-muted-foreground hover:text-foreground"
-                      )}
-                    >
-                      {d}
-                    </button>
-                  ))}
-                </div>
-              </Card>
-
-              {/* Notifications */}
-              <Card id="notifications" title="Notifications" desc="Choose what lands in your inbox." icon={Bell}>
-                <div className="divide-y divide-border/40">
-                  <ToggleRow
-                    label="Product updates"
-                    desc="New features, modes, and improvements."
-                    checked={notif.productUpdates}
-                    onChange={(v) => setNotif({ ...notif, productUpdates: v })}
+                  )}
+                </FieldRow>
+                <FieldRow label="Target company type" className="sm:col-span-2">
+                  <Select
+                    value={profile.targetCompanyType}
+                    onChange={(v) => setProfile({ ...profile, targetCompanyType: v, customCompany: v === "other" ? profile.customCompany : "" })}
+                    options={COMPANY_TYPES}
                   />
-                  <ToggleRow
-                    label="Interview reminders"
-                    desc="Nudges to keep your practice streak alive."
-                    checked={notif.interviewReminders}
-                    onChange={(v) => setNotif({ ...notif, interviewReminders: v })}
-                  />
-                  <ToggleRow
-                    label="Weekly report"
-                    desc="A summary of your scores every Monday."
-                    checked={notif.weeklyReport}
-                    onChange={(v) => setNotif({ ...notif, weeklyReport: v })}
-                  />
-                  <ToggleRow
-                    label="Marketing emails"
-                    desc="Occasional offers and announcements."
-                    checked={notif.marketing}
-                    onChange={(v) => setNotif({ ...notif, marketing: v })}
-                  />
-                </div>
-              </Card>
-
-              {/* Security */}
-              <Card id="security" title="Security" desc="Keep your account locked down." icon={Shield}>
-                <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-border/60 bg-background/40 p-4">
-                  <div>
-                    <div className="text-sm font-medium">Password</div>
-                    <div className="text-xs text-muted-foreground">Last changed 3 months ago</div>
-                  </div>
-                  <Button variant="outline" className="rounded-full" onClick={() => toast("Password reset email sent")}>
-                    <KeyRound className="mr-1.5 h-4 w-4" /> Change password
-                  </Button>
-                </div>
-                <div className="mt-3 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-border/60 bg-background/40 p-4">
-                  <div>
-                    <div className="text-sm font-medium">Two-factor authentication</div>
-                    <div className="text-xs text-muted-foreground">Add an extra step at sign in.</div>
-                  </div>
-                  <Button variant="outline" className="rounded-full" onClick={() => toast("2FA setup coming soon")}>
-                    Enable 2FA
-                  </Button>
-                </div>
-              </Card>
-
-              {/* Danger */}
-              <Card id="danger" title="Danger zone" desc="Irreversible actions on your account." icon={Trash2} tone="destructive">
-                <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-destructive/30 bg-destructive/5 p-4">
-                  <div>
-                    <div className="text-sm font-medium">Delete account</div>
-                    <div className="text-xs text-muted-foreground">Permanently remove your account and all interview history.</div>
-                  </div>
-                  <Button
-                    variant="destructive"
-                    className="rounded-full"
-                    onClick={() => toast.error("Account deletion is disabled in demo")}
-                  >
-                    Delete account
-                  </Button>
-                </div>
-              </Card>
-
-              <div className="flex justify-end">
-                <Button onClick={handleSave} disabled={saving} className="rounded-full shadow-glow">
-                  <Save className="mr-1.5 h-4 w-4" /> {saving ? "Saving…" : "Save changes"}
+                  {profile.targetCompanyType === "other" && (
+                    <Input
+                      className="mt-2"
+                      placeholder="Enter company name (e.g., Google, Microsoft)"
+                      value={profile.customCompany}
+                      onChange={(e) => setProfile({ ...profile, customCompany: e.target.value })}
+                      maxLength={80}
+                    />
+                  )}
+                </FieldRow>
+              </div>
+              <div className="mt-6 flex justify-end">
+                <Button onClick={saveProfile} disabled={loading} className="rounded-full shadow-glow">
+                  <Save className="mr-1.5 h-4 w-4" /> {loading ? "Saving…" : "Save changes"}
                 </Button>
               </div>
+            </Panel>
+          )}
 
-              <div className="h-10" />
+          {/* Resume */}
+          {activeTab === "resume" && (
+            <Panel>
+              {resumeParsed && (
+                <div className="mb-6">
+                  <h3 className="text-base font-semibold tracking-tight">Parsed resume data</h3>
+                  <div className="mt-4 grid gap-4 md:grid-cols-2">
+                    <ParsedBlock title="Extracted skills">
+                      {resumeParsed.skills?.length ? (
+                        <div className="flex flex-wrap gap-1.5">
+                          {resumeParsed.skills.map((s, i) => (
+                            <span key={i} className="rounded bg-emerald-500/15 px-2 py-0.5 text-xs text-emerald-500 ring-1 ring-inset ring-emerald-500/20">{s}</span>
+                          ))}
+                        </div>
+                      ) : <Empty>No skills extracted</Empty>}
+                    </ParsedBlock>
+                    <ParsedBlock title="Experience">
+                      {resumeParsed.experience?.length ? (
+                        <ul className="space-y-1">
+                          {resumeParsed.experience.map((e, i) => <li key={i} className="rounded bg-background/60 p-2 text-sm">{e}</li>)}
+                        </ul>
+                      ) : <Empty>No experience extracted</Empty>}
+                    </ParsedBlock>
+                    <ParsedBlock title="Education">
+                      {resumeParsed.education?.length ? (
+                        <ul className="space-y-1">
+                          {resumeParsed.education.map((e, i) => <li key={i} className="rounded bg-background/60 p-2 text-sm">{e}</li>)}
+                        </ul>
+                      ) : <Empty>No education extracted</Empty>}
+                    </ParsedBlock>
+                    <ParsedBlock title="Projects">
+                      {resumeParsed.projects?.length ? (
+                        <ul className="space-y-1">
+                          {resumeParsed.projects.map((e, i) => <li key={i} className="rounded bg-background/60 p-2 text-sm">{e}</li>)}
+                        </ul>
+                      ) : <Empty>No projects extracted</Empty>}
+                    </ParsedBlock>
+                  </div>
+                  {resumeUrl && (
+                    <div className="mt-4">
+                      <a href={resumeUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 text-sm text-primary underline-offset-4 hover:underline">
+                        <FileText className="h-4 w-4" /> View uploaded resume (PDF)
+                      </a>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              <div className={cn("rounded-xl border bg-background/40 p-5", resumeParsed && "mt-2 border-t border-border/60 pt-6")}>
+                <h3 className="text-base font-semibold tracking-tight">Upload updated resume</h3>
+                <p className="mt-1 text-sm text-muted-foreground">
+                  Upload your latest resume (PDF) — AI will extract new skills and merge them with your existing ones.
+                </p>
+                <input ref={fileRef} type="file" accept="application/pdf" onChange={handleResumeUpload} className="hidden" />
+                <button
+                  onClick={() => fileRef.current?.click()}
+                  disabled={uploadingResume}
+                  className="mt-4 flex w-full flex-col items-center justify-center rounded-xl border-2 border-dashed border-border/70 bg-background/30 px-6 py-10 text-center transition hover:border-primary/50 hover:bg-primary/5 disabled:opacity-60"
+                >
+                  <Upload className="mb-2 h-6 w-6 text-muted-foreground" />
+                  <p className="text-sm font-medium">Click to upload PDF</p>
+                  <p className="mt-1 text-xs text-muted-foreground">Only text-based PDFs are supported. Scanned PDFs will not parse correctly.</p>
+                  {uploadingResume && <p className="mt-3 font-mono text-xs text-primary">Parsing resume…</p>}
+                </button>
+              </div>
+            </Panel>
+          )}
+
+          {/* Password */}
+          {activeTab === "password" && (
+            <Panel>
+              <div className="grid gap-4 sm:max-w-md">
+                <FieldRow label="Current password">
+                  <Input type="password" value={passwords.current} onChange={(e) => setPasswords({ ...passwords, current: e.target.value })} />
+                </FieldRow>
+                <FieldRow label="New password">
+                  <Input type="password" value={passwords.new} onChange={(e) => setPasswords({ ...passwords, new: e.target.value })} />
+                  <p className="mt-1 text-xs text-muted-foreground">Minimum 6 characters.</p>
+                </FieldRow>
+                <FieldRow label="Confirm new password">
+                  <Input type="password" value={passwords.confirm} onChange={(e) => setPasswords({ ...passwords, confirm: e.target.value })} />
+                </FieldRow>
+              </div>
+              <div className="mt-6 flex justify-end">
+                <Button onClick={updatePassword} disabled={loading} className="rounded-full shadow-glow">
+                  <KeyRound className="mr-1.5 h-4 w-4" /> {loading ? "Updating…" : "Update password"}
+                </Button>
+              </div>
+            </Panel>
+          )}
+
+          {/* Danger */}
+          {activeTab === "danger" && (
+            <Panel tone="destructive">
+              <h3 className="text-lg font-semibold tracking-tight text-destructive">Delete account</h3>
+              <p className="mt-1 text-sm text-muted-foreground">
+                Once you delete your account, all your interview data and progress will be permanently lost. This action cannot be undone.
+              </p>
+              <div className="mt-5">
+                <Button
+                  variant="destructive"
+                  onClick={deleteAccount}
+                  disabled={loading}
+                  className="rounded-full"
+                >
+                  <Trash2 className="mr-1.5 h-4 w-4" />
+                  {loading ? "Deleting…" : confirmDelete ? "Click again to confirm" : "Delete my account"}
+                </Button>
+              </div>
+            </Panel>
+          )}
+
+          {/* Current plan footer card */}
+          <section className="mt-8 flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-border/60 bg-card/60 p-5 shadow-elegant backdrop-blur-xl">
+            <div>
+              <p className="font-mono text-[11px] uppercase tracking-widest text-muted-foreground">Current plan</p>
+              <p className="mt-1 text-xl font-semibold tracking-tight text-primary">{plan}</p>
+              <p className="text-xs text-muted-foreground">{creditsRemaining} credits remaining</p>
             </div>
+            <Button asChild variant="outline" className="rounded-full">
+              <Link to="/upgrade"><Sparkles className="mr-1.5 h-4 w-4" /> Upgrade plan</Link>
+            </Button>
+          </section>
+
+          <div className="mt-6 text-center">
+            <Link to="/dashboard" className="inline-flex items-center gap-1.5 text-sm text-primary underline-offset-4 hover:underline">
+              <ArrowLeft className="h-3.5 w-3.5" /> Back to Dashboard
+            </Link>
           </div>
+
+          <div className="h-10" />
         </main>
       </div>
     </div>
   );
 }
 
-function Card({
-  id, title, desc, icon: Icon, tone, children,
-}: {
-  id: string; title: string; desc: string; icon: typeof User;
-  tone?: "destructive"; children: React.ReactNode;
-}) {
+// ===== Helpers =====
+
+function Tab({
+  children, active, onClick, icon: Icon, tone,
+}: { children: React.ReactNode; active: boolean; onClick: () => void; icon: typeof User; tone?: "destructive" }) {
+  return (
+    <button
+      onClick={onClick}
+      className={cn(
+        "-mb-px inline-flex items-center gap-1.5 border-b-2 px-4 py-2.5 text-sm transition",
+        active
+          ? tone === "destructive"
+            ? "border-destructive text-destructive"
+            : "border-primary text-foreground"
+          : "border-transparent text-muted-foreground hover:text-foreground"
+      )}
+    >
+      <Icon className="h-3.5 w-3.5" /> {children}
+    </button>
+  );
+}
+
+function Panel({ children, tone }: { children: React.ReactNode; tone?: "destructive" }) {
   return (
     <section
-      id={id}
       className={cn(
-        "scroll-mt-24 rounded-2xl border bg-card/60 p-6 shadow-elegant backdrop-blur-xl sm:p-8",
+        "rounded-2xl border bg-card/60 p-6 shadow-elegant backdrop-blur-xl sm:p-8",
         tone === "destructive" ? "border-destructive/30" : "border-border/60"
       )}
     >
-      <div className="mb-5 flex items-start gap-3">
-        <div className={cn(
-          "flex h-9 w-9 items-center justify-center rounded-xl ring-1",
-          tone === "destructive"
-            ? "bg-destructive/10 text-destructive ring-destructive/20"
-            : "bg-primary/10 text-primary ring-primary/20"
-        )}>
-          <Icon className="h-4 w-4" />
-        </div>
-        <div>
-          <h2 className="text-lg font-semibold tracking-tight">{title}</h2>
-          <p className="text-sm text-muted-foreground">{desc}</p>
-        </div>
-      </div>
       {children}
     </section>
   );
@@ -348,70 +469,31 @@ function FieldRow({ label, children, className }: { label: string; children: Rea
   );
 }
 
-function SectionLink({ href, icon: Icon, label }: { href: string; icon: typeof User; label: string }) {
+function Select({
+  value, onChange, options,
+}: { value: string; onChange: (v: string) => void; options: { value: string; label: string }[] }) {
   return (
-    <a
-      href={href}
-      className="flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-muted-foreground transition hover:bg-muted/60 hover:text-foreground"
+    <select
+      value={value}
+      onChange={(e) => onChange(e.target.value)}
+      className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
     >
-      <Icon className="h-4 w-4" /> {label}
-    </a>
+      {options.map((o) => (
+        <option key={o.value} value={o.value}>{o.label}</option>
+      ))}
+    </select>
   );
 }
 
-function ThemeOption({
-  label, active, onClick, icon: Icon,
-}: { label: string; active: boolean; onClick: () => void; icon: typeof Sun }) {
+function ParsedBlock({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <button
-      onClick={onClick}
-      className={cn(
-        "flex items-center gap-3 rounded-xl border p-4 text-left transition",
-        active
-          ? "border-primary/60 bg-primary/5 shadow-glow"
-          : "border-border/60 bg-background/40 hover:border-border hover:bg-muted/40"
-      )}
-    >
-      <div className={cn(
-        "flex h-9 w-9 items-center justify-center rounded-lg ring-1",
-        active ? "bg-primary/10 text-primary ring-primary/20" : "bg-muted text-muted-foreground ring-border/60"
-      )}>
-        <Icon className="h-4 w-4" />
-      </div>
-      <div>
-        <div className="text-sm font-medium">{label}</div>
-        <div className="text-xs text-muted-foreground">{label === "System" ? "Match your OS" : `Always ${label.toLowerCase()}`}</div>
-      </div>
-      {active && <Check className="ml-auto h-4 w-4 text-primary" />}
-    </button>
-  );
-}
-
-function ToggleRow({
-  label, desc, checked, onChange,
-}: { label: string; desc: string; checked: boolean; onChange: (v: boolean) => void }) {
-  return (
-    <div className="flex items-center justify-between gap-4 py-3">
-      <div className="min-w-0">
-        <div className="text-sm font-medium">{label}</div>
-        <div className="text-xs text-muted-foreground">{desc}</div>
-      </div>
-      <button
-        role="switch"
-        aria-checked={checked}
-        onClick={() => onChange(!checked)}
-        className={cn(
-          "relative h-6 w-11 shrink-0 rounded-full transition-colors",
-          checked ? "bg-primary" : "bg-muted ring-1 ring-inset ring-border/60"
-        )}
-      >
-        <span
-          className={cn(
-            "absolute top-0.5 h-5 w-5 rounded-full bg-background shadow transition-transform",
-            checked ? "translate-x-[22px]" : "translate-x-0.5"
-          )}
-        />
-      </button>
+    <div className="rounded-xl border border-border/60 bg-background/40 p-4">
+      <h4 className="mb-2 font-mono text-[11px] uppercase tracking-widest text-muted-foreground">{title}</h4>
+      {children}
     </div>
   );
+}
+
+function Empty({ children }: { children: React.ReactNode }) {
+  return <p className="text-sm text-muted-foreground">{children}</p>;
 }
