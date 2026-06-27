@@ -240,24 +240,36 @@ function DashboardPage() {
 
               {/* Difficulty */}
               <div className="space-y-3">
-                <Label>Experience level</Label>
+                <Label>Difficulty level</Label>
                 <div className="grid grid-cols-3 gap-2">
-                  {(["easy", "medium", "hard"] as Difficulty[]).map((d) => (
-                    <button
-                      key={d}
-                      onClick={() => setDifficulty(d)}
-                      className={cn(
-                        "rounded-lg border bg-card/40 py-2.5 text-xs font-medium capitalize transition-all",
-                        difficulty === d
-                          ? "border-border bg-muted text-foreground"
-                          : "border-border/60 text-muted-foreground hover:border-border hover:text-foreground"
-                      )}
-                    >
-                      {d}
-                    </button>
-                  ))}
+                  {([
+                    { id: "easy",   label: "Easy",   dot: "bg-emerald-500", ring: "border-emerald-500/50 bg-emerald-500/10 text-emerald-300 shadow-[0_0_24px_-8px_theme(colors.emerald.500)]" },
+                    { id: "medium", label: "Medium", dot: "bg-amber-500",   ring: "border-amber-500/50 bg-amber-500/10 text-amber-300 shadow-[0_0_24px_-8px_theme(colors.amber.500)]" },
+                    { id: "hard",   label: "Hard",   dot: "bg-rose-500",    ring: "border-rose-500/50 bg-rose-500/10 text-rose-300 shadow-[0_0_24px_-8px_theme(colors.rose.500)]" },
+                  ] as const).map((d) => {
+                    const active = difficulty === d.id;
+                    return (
+                      <button
+                        key={d.id}
+                        onClick={() => setDifficulty(d.id)}
+                        className={cn(
+                          "group relative flex items-center justify-center gap-2 overflow-hidden rounded-lg border py-2.5 text-xs font-medium transition-all",
+                          active
+                            ? d.ring
+                            : "border-border/60 bg-card/40 text-muted-foreground hover:border-border hover:text-foreground"
+                        )}
+                      >
+                        <span className="relative inline-flex h-1.5 w-1.5">
+                          <span className={cn("absolute inset-0 rounded-full opacity-60", d.dot, active && "animate-ping")} />
+                          <span className={cn("relative inline-flex h-1.5 w-1.5 rounded-full", d.dot)} />
+                        </span>
+                        {d.label}
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
+
 
               {/* Question count — preset chips */}
               <div className="space-y-3 pt-1">
