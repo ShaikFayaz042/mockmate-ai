@@ -120,12 +120,12 @@ export function LandingAuthed({ user }: { user: FakeUser }) {
                 +12% WoW
               </span>
             </div>
-            <div className="flex h-44 items-end gap-2 sm:gap-4">
+            <div className="flex h-44 items-end gap-2 sm:gap-3">
               {PROGRESS.map((p) => {
                 const h = Math.max(8, Math.round((p.score / max) * 100));
                 return (
-                  <div key={p.day} className="flex min-w-0 flex-1 flex-col items-center gap-2">
-                    <div className="relative w-full overflow-hidden rounded-md bg-muted/40" style={{ height: "100%" }}>
+                  <div key={p.day} className="flex h-full min-w-0 flex-1 flex-col items-center justify-end gap-2">
+                    <div className="relative w-full flex-1 overflow-hidden rounded-md bg-muted/40">
                       <div
                         className="absolute inset-x-0 bottom-0 rounded-md bg-gradient-to-t from-primary to-primary/40 transition-all"
                         style={{ height: `${h}%` }}
