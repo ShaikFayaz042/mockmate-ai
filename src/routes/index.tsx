@@ -19,16 +19,17 @@ import { Button } from "@/components/ui/button";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "MockMate — AI-powered mock interviews that actually feel real" },
+      { title: "MockMate — AI mock interviews in text, voice, and video" },
       {
         name: "description",
         content:
-          "Practice text, voice, and video interviews with a real-time AI interviewer. Get instant feedback, scores, and a clear path to your next role.",
+          "Practice text, voice, and video interviews with an adaptive AI interviewer. Pick a role, difficulty, and question count — get a scored report after every session.",
       },
       { property: "og:title", content: "MockMate — AI-powered mock interviews" },
       {
         property: "og:description",
-        content: "Real-time AI interviewer. Voice, video, and text. Detailed feedback after every session.",
+        content:
+          "Adaptive AI interviewer across text, voice, and video. Per-question feedback, overall score, and a clean session history.",
       },
     ],
   }),
@@ -39,32 +40,32 @@ const FEATURES = [
   {
     icon: Brain,
     title: "Adaptive interviewer",
-    body: "Questions adapt to your role, skills, and answers — no two sessions feel the same.",
+    body: "Questions adjust to your target role, difficulty, and the answers you give — no two sessions feel the same.",
   },
   {
     icon: LineChart,
-    title: "Detailed feedback",
-    body: "Scores for clarity, depth, structure, and confidence — with line-by-line suggestions.",
+    title: "Scored reports",
+    body: "Every session ends with an overall score, technical depth, communication, and problem-solving breakdown.",
   },
   {
     icon: Target,
-    title: "Target-role tuned",
-    body: "Pick a role (SDE, PM, DS…) and difficulty. We tailor the interview around it.",
+    title: "Role & difficulty tuned",
+    body: "Pick a category, set Easy / Medium / Hard, choose 5–20 questions. The interview shapes around it.",
   },
   {
     icon: ShieldCheck,
-    title: "Private by default",
-    body: "Your sessions and recordings stay yours. Delete anything, anytime.",
+    title: "You own your data",
+    body: "Profile, resume, and session history live in your account. Delete anything from Settings, anytime.",
   },
   {
     icon: Zap,
-    title: "Fast, low-latency",
-    body: "Streamed responses keep the conversation flowing — no awkward gaps.",
+    title: "Two timer modes",
+    body: "Time-based per question for sharp reps, or a fixed total time for a full mock-interview feel.",
   },
   {
     icon: Sparkles,
-    title: "Beautiful history",
-    body: "Every interview, transcript, and score lives in a clean, searchable timeline.",
+    title: "Searchable history",
+    body: "Every interview lands in My Interviews with filters, status, and a one-click report.",
   },
 ];
 
@@ -73,27 +74,27 @@ const MODES = [
     icon: MessageSquare,
     name: "Text",
     tag: "Most popular",
-    body: "Type your answers. Perfect for quick reps, system design, and behavioral drills.",
+    body: "Type your answers in a focused workbench. Best for behavioral, system design, and quick reps.",
   },
   {
     icon: Mic,
     name: "Voice",
     tag: "Realistic",
-    body: "Speak naturally with an AI interviewer that listens, follows up, and pushes back.",
+    body: "Dual-orb interface — the AI speaks, you tap to talk back. Natural pacing with live status cues.",
   },
   {
     icon: Video,
     name: "Video",
     tag: "Experimental",
-    body: "Camera + mic. Practice presence, eye contact, and pacing like the real thing.",
+    body: "Your camera on one side, the AI interviewer avatar on the other. Practice presence and pacing.",
   },
 ];
 
 const STEPS = [
-  { n: "01", t: "Build your profile", b: "Add target role, skills, and experience level." },
-  { n: "02", t: "Pick a mode", b: "Text, voice, or video — choose what you want to practice." },
-  { n: "03", t: "Interview live", b: "Adaptive questions, real follow-ups, natural pacing." },
-  { n: "04", t: "Get feedback", b: "Scores, strengths, and concrete next steps — instantly." },
+  { n: "01", t: "Create your account", b: "Sign up with email or Google and land on your dashboard." },
+  { n: "02", t: "Configure the session", b: "Pick mode, category, difficulty, question count, and timer style." },
+  { n: "03", t: "Run the interview", b: "Question-by-question flow with a live timer and progress bar." },
+  { n: "04", t: "Open the report", b: "Scores, strengths, improvements, and per-question feedback." },
 ];
 
 const PLANS = [
@@ -101,7 +102,7 @@ const PLANS = [
     name: "Free",
     price: "₹0",
     cadence: "forever",
-    features: ["3 interviews / month", "Text mode", "Basic feedback", "Last 7 days history"],
+    features: ["3 interviews / month", "Text mode", "Basic feedback", "Last 7 days of history"],
     cta: "Start free",
     highlight: false,
   },
@@ -109,7 +110,7 @@ const PLANS = [
     name: "Pro",
     price: "₹499",
     cadence: "/ month",
-    features: ["Unlimited text & voice", "Detailed scoring", "Full history", "Role-tuned questions"],
+    features: ["Unlimited text & voice", "Full scored reports", "Unlimited history", "All difficulty levels"],
     cta: "Go Pro",
     highlight: true,
   },
@@ -117,7 +118,7 @@ const PLANS = [
     name: "Premium",
     price: "₹999",
     cadence: "/ month",
-    features: ["Everything in Pro", "Video interviews", "Priority models", "Exportable reports"],
+    features: ["Everything in Pro", "Video mode with AI avatar", "Priority models", "Exportable PDF reports"],
     cta: "Go Premium",
     highlight: false,
   },
@@ -136,18 +137,18 @@ function Landing() {
         <div className="relative mx-auto max-w-5xl text-center">
           <span className="inline-flex items-center gap-2 rounded-full border border-border/70 bg-surface/70 px-3 py-1 text-xs font-medium text-muted-foreground backdrop-blur">
             <span className="h-1.5 w-1.5 rounded-full bg-primary" />
-            Now with realtime voice mode
+            Voice mode with dual-orb interface is live
           </span>
 
           <h1 className="mt-6 text-balance text-4xl font-semibold tracking-tight text-foreground sm:text-6xl md:text-7xl">
-            Interviews that feel real.
+            Mock interviews that feel real.
             <br />
-            <span className="text-gradient-primary">Feedback that moves the needle.</span>
+            <span className="text-gradient-primary">Reports that show you what to fix.</span>
           </h1>
 
           <p className="mx-auto mt-6 max-w-2xl text-balance text-base text-muted-foreground sm:text-lg">
-            MockMate is your personal AI interviewer. Practice in text, voice, or video — and walk
-            away with the exact reps and feedback you need to land the offer.
+            MockMate is your AI interviewer across text, voice, and video. Pick a role and difficulty,
+            run a focused session, and get a scored report — strengths, gaps, and the exact next reps.
           </p>
 
           <div className="mt-9 flex flex-wrap items-center justify-center gap-3">
@@ -157,7 +158,7 @@ function Landing() {
               </Link>
             </Button>
             <Button asChild size="lg" variant="outline" className="rounded-full">
-              <a href="#how">How it works</a>
+              <a href="#how">See how it works</a>
             </Button>
           </div>
 
@@ -175,7 +176,7 @@ function Landing() {
                 <span className="h-2.5 w-2.5 rounded-full bg-chart-4/80" />
                 <span className="h-2.5 w-2.5 rounded-full bg-success/80" />
                 <span className="ml-3 font-mono text-xs text-muted-foreground">
-                  mockmate.app · interview · senior-frontend
+                  mockmate.app · interview · frontend · medium · Q 4 / 10
                 </span>
               </div>
               <div className="grid gap-4 p-6 md:grid-cols-[1fr_280px]">
@@ -199,9 +200,9 @@ function Landing() {
                 </div>
                 <div className="space-y-3">
                   {[
-                    { l: "Clarity", v: 88 },
-                    { l: "Structure", v: 74 },
-                    { l: "Depth", v: 81 },
+                    { l: "Technical depth", v: 82 },
+                    { l: "Communication", v: 88 },
+                    { l: "Problem solving", v: 74 },
                   ].map((s) => (
                     <div
                       key={s.l}
@@ -288,7 +289,7 @@ function Landing() {
           <div className="max-w-2xl">
             <p className="text-sm font-medium text-primary">How it works</p>
             <h2 className="mt-2 text-3xl font-semibold tracking-tight sm:text-4xl">
-              From signup to your first feedback report in under 2 minutes.
+              From signup to your first scored report in under two minutes.
             </h2>
           </div>
 
@@ -364,12 +365,12 @@ function Landing() {
           <div className="pointer-events-none absolute inset-0 bg-mesh opacity-80" />
           <div className="relative">
             <h2 className="text-balance text-3xl font-semibold tracking-tight sm:text-4xl">
-              Your next interview is in a week.
+              Your next interview is closer than you think.
               <br />
-              <span className="text-gradient-primary">Be ready by Sunday.</span>
+              <span className="text-gradient-primary">Run your first mock today.</span>
             </h2>
             <p className="mx-auto mt-4 max-w-xl text-sm text-muted-foreground">
-              Start with three free interviews. No card, no commitment.
+              Three free interviews to start. No card, no commitment.
             </p>
             <div className="mt-7 flex flex-wrap justify-center gap-3">
               <Button asChild size="lg" className="rounded-full shadow-glow">
