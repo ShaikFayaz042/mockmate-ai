@@ -149,12 +149,56 @@ function DashboardPage() {
           </div>
 
           {/* Stats cards */}
-          <section className="mb-10 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
-            <StatCard label="Total interviews" value={stats.total} icon={BarChart3} hint="All-time" trend="+2 this week" tone="primary" />
-            <StatCard label="Average score"   value={`${stats.avg}%`}  icon={Trophy}   hint="Across all sessions" trend="+4 pts" tone="emerald" />
-            <StatCard label="Best score"      value={`${stats.best}%`} icon={Award}    hint="Personal best"       trend="Mixed · Text" tone="amber" />
-            <StatCard label="Credits left"    value={stats.credits}    icon={Coins}    hint={`~${Math.floor(stats.credits / 25)} text rounds`} trend="Pro plan" tone="violet" />
-          </section>
+          <ErrorBoundary label="stats">
+            <section className="mb-10 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
+              {hydrating ? (
+                Array.from({ length: 4 }).map((_, i) => <StatSkeleton key={i} />)
+              ) : (
+                <>
+                  <StatCard label="Total interviews" value={stats.total} icon={BarChart3} hint="All-time" trend="+2 this week" tone="primary" />
+                  <StatCard label="Average score"   value={`${stats.avg}%`}  icon={Trophy}   hint="Across all sessions" trend="+4 pts" tone="emerald" />
+                  <StatCard label="Best score"      value={`${stats.best}%`} icon={Award}    hint="Personal best"       trend="Mixed · Text" tone="amber" />
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <button className="text-left">
+                        <StatCard label="Credits left"    value={stats.credits}    icon={Coins}    hint={`~${Math.floor(stats.credits / 25)} text rounds`} trend="Click for history" tone="violet" />
+                      </button>
+                    </PopoverTrigger>
+                    <PopoverContent align="end" className="w-80 border-border/60 bg-card/95 backdrop-blur-xl">
+                      <div className="mb-3 flex items-center justify-between">
+                        <div>
+                          <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">Credits</p>
+                          <p className="text-lg font-semibold">{stats.credits} <span className="text-xs font-normal text-muted-foreground">remaining</span></p>
+                        </div>
+                        <Button size="sm" variant="outline" className="rounded-full" onClick={() => navigate({ to: "/upgrade" })}>
+                          <Sparkles className="mr-1 h-3.5 w-3.5" /> Top up
+                        </Button>
+                      </div>
+                      <div className="space-y-1">
+                        <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">Recent activity</p>
+                        <ul className="divide-y divide-border/40">
+                          {CREDIT_HISTORY.map((c) => (
+                            <li key={c.id} className="flex items-center justify-between py-2 text-sm">
+                              <div className="min-w-0">
+                                <div className="truncate">{c.label}</div>
+                                <div className="font-mono text-[10px] text-muted-foreground">{fmtDate(c.date)}</div>
+                              </div>
+                              <span className={cn(
+                                "inline-flex items-center gap-0.5 font-mono text-xs",
+                                c.delta >= 0 ? "text-emerald-500" : "text-muted-foreground"
+                              )}>
+                                {c.delta >= 0 ? <Plus className="h-3 w-3" /> : <Minus className="h-3 w-3" />}{Math.abs(c.delta)}
+                              </span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    </PopoverContent>
+                  </Popover>
+                </>
+              )}
+            </section>
+          </ErrorBoundary>
 
           {/* Interview customization — monolithic dark glass */}
           <section className="mb-10 overflow-hidden rounded-2xl border border-border/60 bg-card/70 p-6 shadow-elegant backdrop-blur-xl sm:p-8">
