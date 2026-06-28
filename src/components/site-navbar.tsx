@@ -4,6 +4,7 @@ import { Menu, X } from "lucide-react";
 import { BrandMark } from "./brand-mark";
 import { ThemeToggle } from "./theme-toggle";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/hooks/use-auth";
 
 const NAV = [
   { href: "#features", label: "Features" },
