@@ -87,8 +87,10 @@ function NavBody({
         </div>
         <button
           onClick={() => {
-            toast("Logged out (demo)");
+            logout();
+            toast("Logged out");
             onNavigate?.();
+            navigate({ to: "/" });
           }}
           className="flex w-full items-center gap-2 rounded-lg px-2 py-2 text-sm text-muted-foreground hover:bg-muted hover:text-foreground"
         >
