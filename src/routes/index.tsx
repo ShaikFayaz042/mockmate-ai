@@ -40,32 +40,32 @@ const FEATURES = [
   {
     icon: Brain,
     title: "Adaptive interviewer",
-    body: "Questions adjust to your target role, difficulty, and the answers you give — no two sessions feel the same.",
+    body: "Questions adapt to your role, skills, and answers — no two sessions feel the same.",
   },
   {
     icon: LineChart,
-    title: "Scored reports",
-    body: "Every session ends with an overall score, technical depth, communication, and problem-solving breakdown.",
+    title: "Detailed feedback",
+    body: "Scores for clarity, depth, structure, and confidence — with line-by-line suggestions.",
   },
   {
     icon: Target,
-    title: "Role & difficulty tuned",
-    body: "Pick a category, set Easy / Medium / Hard, choose 5–20 questions. The interview shapes around it.",
+    title: "Target-role tuned",
+    body: "Pick a role (SDE, PM, DS…) and difficulty. We tailor the interview around it.",
   },
   {
     icon: ShieldCheck,
-    title: "You own your data",
-    body: "Profile, resume, and session history live in your account. Delete anything from Settings, anytime.",
+    title: "Private by default",
+    body: "Your sessions and recordings stay yours. Delete anything, anytime.",
   },
   {
     icon: Zap,
-    title: "Two timer modes",
-    body: "Time-based per question for sharp reps, or a fixed total time for a full mock-interview feel.",
+    title: "Fast, low-latency",
+    body: "Streamed responses keep the conversation flowing — no awkward gaps.",
   },
   {
     icon: Sparkles,
-    title: "Searchable history",
-    body: "Every interview lands in My Interviews with filters, status, and a one-click report.",
+    title: "Beautiful history",
+    body: "Every interview, transcript, and score lives in a clean, searchable timeline.",
   },
 ];
 
@@ -137,18 +137,18 @@ function Landing() {
         <div className="relative mx-auto max-w-5xl text-center">
           <span className="inline-flex items-center gap-2 rounded-full border border-border/70 bg-surface/70 px-3 py-1 text-xs font-medium text-muted-foreground backdrop-blur">
             <span className="h-1.5 w-1.5 rounded-full bg-primary" />
-            Voice mode with dual-orb interface is live
+            Now with realtime voice mode
           </span>
 
           <h1 className="mt-6 text-balance text-4xl font-semibold tracking-tight text-foreground sm:text-6xl md:text-7xl">
-            Mock interviews that feel real.
+            Interviews that feel real.
             <br />
-            <span className="text-gradient-primary">Reports that show you what to fix.</span>
+            <span className="text-gradient-primary">Feedback that moves the needle.</span>
           </h1>
 
           <p className="mx-auto mt-6 max-w-2xl text-balance text-base text-muted-foreground sm:text-lg">
-            MockMate is your AI interviewer across text, voice, and video. Pick a role and difficulty,
-            run a focused session, and get a scored report — strengths, gaps, and the exact next reps.
+            MockMate is your personal AI interviewer. Practice in text, voice, or video — and walk
+            away with the exact reps and feedback you need to land the offer.
           </p>
 
           <div className="mt-9 flex flex-wrap items-center justify-center gap-3">
@@ -158,7 +158,7 @@ function Landing() {
               </Link>
             </Button>
             <Button asChild size="lg" variant="outline" className="rounded-full">
-              <a href="#how">See how it works</a>
+              <a href="#how">How it works</a>
             </Button>
           </div>
 
@@ -176,7 +176,7 @@ function Landing() {
                 <span className="h-2.5 w-2.5 rounded-full bg-chart-4/80" />
                 <span className="h-2.5 w-2.5 rounded-full bg-success/80" />
                 <span className="ml-3 font-mono text-xs text-muted-foreground">
-                  mockmate.app · interview · frontend · medium · Q 4 / 10
+                  mockmate.app · interview · senior-frontend
                 </span>
               </div>
               <div className="grid gap-4 p-6 md:grid-cols-[1fr_280px]">
@@ -200,9 +200,9 @@ function Landing() {
                 </div>
                 <div className="space-y-3">
                   {[
-                    { l: "Technical depth", v: 82 },
-                    { l: "Communication", v: 88 },
-                    { l: "Problem solving", v: 74 },
+                    { l: "Clarity", v: 88 },
+                    { l: "Structure", v: 74 },
+                    { l: "Depth", v: 81 },
                   ].map((s) => (
                     <div
                       key={s.l}
@@ -365,12 +365,12 @@ function Landing() {
           <div className="pointer-events-none absolute inset-0 bg-mesh opacity-80" />
           <div className="relative">
             <h2 className="text-balance text-3xl font-semibold tracking-tight sm:text-4xl">
-              Your next interview is closer than you think.
+              Your next interview is in a week.
               <br />
-              <span className="text-gradient-primary">Run your first mock today.</span>
+              <span className="text-gradient-primary">Be ready by Sunday.</span>
             </h2>
             <p className="mx-auto mt-4 max-w-xl text-sm text-muted-foreground">
-              Three free interviews to start. No card, no commitment.
+              Start with three free interviews. No card, no commitment.
             </p>
             <div className="mt-7 flex flex-wrap justify-center gap-3">
               <Button asChild size="lg" className="rounded-full shadow-glow">
