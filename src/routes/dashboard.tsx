@@ -125,12 +125,12 @@ function DashboardPage() {
       <div className="pointer-events-none absolute inset-x-0 top-0 h-[420px] bg-mesh opacity-60" />
       <div className="pointer-events-none absolute inset-0 bg-grid opacity-30 [mask-image:radial-gradient(ellipse_at_top,black_20%,transparent_70%)]" />
 
-      <div className="relative z-10 mx-auto flex min-h-screen max-w-[1400px]">
+      <div className="relative z-10 mx-auto flex w-full min-h-screen max-w-[1400px]">
         <AppSidebar active="dashboard" credits={stats.credits} />
 
 
         {/* Main */}
-        <main className="flex-1 px-4 py-6 sm:px-8 sm:py-10">
+        <main className="flex-1 min-w-0 px-4 pt-6 pb-8 pl-16 sm:px-8 sm:py-10">
           {/* Topbar */}
           <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
             <div>

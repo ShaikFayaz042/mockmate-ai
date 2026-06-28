@@ -96,19 +96,19 @@ function ReportPage() {
 
       <div className="relative z-10 mx-auto max-w-6xl px-4 py-6 sm:px-8 sm:py-10">
         {/* Top bar */}
-        <div className="mb-6 flex items-center justify-between gap-4">
+        <div className="mb-6 flex flex-wrap items-center justify-between gap-2">
           <Button asChild variant="ghost" size="sm" className="rounded-full text-muted-foreground">
             <Link to="/my-interviews">
-              <ArrowLeft className="mr-1.5 h-4 w-4" /> Back to history
+              <ArrowLeft className="mr-1.5 h-4 w-4" /> Back
             </Link>
           </Button>
           <div className="flex items-center gap-2">
             <ThemeToggle />
             <Button variant="outline" size="sm" className="rounded-full" onClick={() => toast("Link copied")}>
-              <Share2 className="mr-1.5 h-4 w-4" /> Share
+              <Share2 className="h-4 w-4 sm:mr-1.5" /> <span className="hidden sm:inline">Share</span>
             </Button>
             <Button size="sm" className="rounded-full" onClick={() => toast("Downloading PDF…")}>
-              <Download className="mr-1.5 h-4 w-4" /> Download PDF
+              <Download className="h-4 w-4 sm:mr-1.5" /> <span className="hidden sm:inline">Download PDF</span>
             </Button>
           </div>
         </div>
