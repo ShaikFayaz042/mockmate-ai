@@ -543,51 +543,70 @@ function VideoAnswer({ draft, onTranscript }: { draft: string; onTranscript: (t:
   };
 
   return (
-    <div className="grid h-full gap-4 lg:grid-cols-[1fr_240px]">
-      <div className="relative overflow-hidden rounded-xl border border-border/60 bg-black/60">
-        <video ref={videoRef} muted playsInline className="h-full max-h-[420px] w-full object-cover" />
-        {!on && (
-          <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-gradient-to-br from-background/80 to-background/50 p-6 text-center">
-            <Video className="h-10 w-10 text-muted-foreground" />
-            <div className="text-sm text-muted-foreground">Camera is off</div>
-            <Button onClick={startCam} size="sm">
-              <Video className="mr-1.5 h-4 w-4" /> Enable camera & mic
-            </Button>
-            {error && <p className="max-w-xs text-xs text-rose-400">{error}</p>}
+    <div className="flex h-full flex-col gap-3">
+      <div className="grid min-h-0 flex-1 gap-3 lg:grid-cols-2">
+        {/* User camera tile */}
+        <div className="relative overflow-hidden rounded-xl border border-border/60 bg-black/60">
+          <video ref={videoRef} muted playsInline className="h-full w-full object-cover" />
+          {!on && (
+            <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-gradient-to-br from-background/80 to-background/50 p-6 text-center">
+              <Video className="h-10 w-10 text-muted-foreground" />
+              <div className="text-sm text-muted-foreground">Camera is off</div>
+              <Button onClick={startCam} size="sm">
+                <Video className="mr-1.5 h-4 w-4" /> Enable camera & mic
+              </Button>
+              {error && <p className="max-w-xs text-xs text-rose-400">{error}</p>}
+            </div>
+          )}
+          {recording && (
+            <div className="absolute left-3 top-3 inline-flex items-center gap-1.5 rounded-md bg-rose-500/90 px-2 py-1 text-[10px] font-medium uppercase tracking-wider text-white">
+              <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-white" /> Rec
+            </div>
+          )}
+          <div className="absolute bottom-3 left-3 rounded-md bg-black/60 px-2 py-1 text-[10px] font-medium uppercase tracking-wider text-white/90 backdrop-blur">
+            You
           </div>
-        )}
-        {recording && (
-          <div className="absolute left-3 top-3 inline-flex items-center gap-1.5 rounded-md bg-rose-500/90 px-2 py-1 text-[10px] font-medium uppercase tracking-wider text-white">
-            <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-white" /> Rec
+        </div>
+
+        {/* AI Interviewer avatar tile */}
+        <div className="relative overflow-hidden rounded-xl border border-primary/30 bg-gradient-to-br from-violet-950/60 via-background to-fuchsia-950/40">
+          <div className="pointer-events-none absolute inset-0 bg-grid opacity-10" />
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className="relative">
+              <span className="absolute inset-0 -m-6 animate-ping rounded-full bg-primary/20" />
+              <span className="absolute inset-0 -m-3 rounded-full bg-primary/30 blur-2xl" />
+              <div className="relative grid h-28 w-28 place-items-center rounded-full bg-gradient-to-br from-primary to-fuchsia-500 shadow-2xl ring-2 ring-primary/40 sm:h-32 sm:w-32">
+                <Bot className="h-12 w-12 text-white sm:h-14 sm:w-14" />
+              </div>
+            </div>
           </div>
-        )}
+          <div className="absolute bottom-3 left-3 rounded-md bg-black/60 px-2 py-1 text-[10px] font-medium uppercase tracking-wider text-white/90 backdrop-blur">
+            MockMate AI
+          </div>
+          <div className="absolute right-3 top-3 inline-flex items-center gap-1.5 rounded-md bg-emerald-500/20 px-2 py-1 text-[10px] font-medium uppercase tracking-wider text-emerald-300 ring-1 ring-emerald-500/40">
+            <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-400" /> Live
+          </div>
+        </div>
       </div>
-      <div className="flex flex-col gap-3">
-        <Button onClick={toggleRec} disabled={!on} variant={recording ? "destructive" : "default"}>
+
+      <div className="flex flex-wrap items-center gap-2">
+        <Button onClick={toggleRec} disabled={!on} variant={recording ? "destructive" : "default"} size="sm">
           {recording ? (
-            <>
-              <MicOff className="mr-1.5 h-4 w-4" /> Stop & transcribe
-            </>
+            <><MicOff className="mr-1.5 h-4 w-4" /> Stop & transcribe</>
           ) : (
-            <>
-              <Mic className="mr-1.5 h-4 w-4" /> Start recording
-            </>
+            <><Mic className="mr-1.5 h-4 w-4" /> Start recording</>
           )}
         </Button>
         <Button onClick={on ? stopCam : startCam} variant="outline" size="sm">
           {on ? (
-            <>
-              <VideoOff className="mr-1.5 h-4 w-4" /> Disable camera
-            </>
+            <><VideoOff className="mr-1.5 h-4 w-4" /> Disable camera</>
           ) : (
-            <>
-              <Video className="mr-1.5 h-4 w-4" /> Enable camera
-            </>
+            <><Video className="mr-1.5 h-4 w-4" /> Enable camera</>
           )}
         </Button>
         {draft && (
-          <div className="rounded-xl border border-border/60 bg-background/40 p-3 text-xs text-muted-foreground">
-            <div className="mb-1 text-[10px] font-mono uppercase tracking-wider text-foreground/60">Transcript</div>
+          <div className="ml-auto max-w-md truncate rounded-md border border-border/60 bg-background/40 px-3 py-1.5 text-xs text-muted-foreground">
+            <span className="mr-2 font-mono uppercase tracking-wider text-foreground/60">Transcript:</span>
             {draft}
           </div>
         )}
