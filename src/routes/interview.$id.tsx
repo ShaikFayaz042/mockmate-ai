@@ -436,55 +436,156 @@ function TextAnswer({ draft, onChange, disabled }: { draft: string; onChange: (v
 function VoiceAnswer({ draft, onTranscript }: { draft: string; onTranscript: (t: string) => void }) {
   const [recording, setRecording] = useState(false);
   const [seconds, setSeconds] = useState(0);
+  const [aiSpeaking, setAiSpeaking] = useState(true);
   const tRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  // Simulate AI finishing its prompt after a short delay
+  useEffect(() => {
+    const t = setTimeout(() => setAiSpeaking(false), 2800);
+    return () => clearTimeout(t);
+  }, []);
 
   const toggle = () => {
     if (recording) {
       if (tRef.current) clearInterval(tRef.current);
       setRecording(false);
-      // mock transcription
       onTranscript("(transcribed) I would start by clarifying the requirements and constraints…");
       toast.success("Captured", { description: `${seconds}s of audio transcribed.` });
       setSeconds(0);
     } else {
       setRecording(true);
+      setAiSpeaking(false);
       tRef.current = setInterval(() => setSeconds((s) => s + 1), 1000);
     }
   };
 
   return (
-    <div className="flex h-full flex-col items-center justify-center gap-6 py-6">
-      <div className="relative">
+    <div className="flex h-full min-h-[420px] flex-col items-center justify-center gap-10 py-6">
+      <div className="flex items-start justify-center gap-10 sm:gap-20">
+        <Orb
+          tone="violet"
+          active={aiSpeaking}
+          icon={<Bot className="h-10 w-10" strokeWidth={1.75} />}
+          label="Interviewer"
+          status={aiSpeaking ? "Speaking…" : "Listening"}
+        />
         <button
           onClick={toggle}
-          className={cn(
-            "relative flex h-28 w-28 items-center justify-center rounded-full border transition",
-            recording
-              ? "border-rose-500/60 bg-rose-500/15 text-rose-300"
-              : "border-primary/40 bg-primary/10 text-primary hover:bg-primary/20",
-          )}
+          className="group flex flex-col items-center focus:outline-none"
+          aria-label={recording ? "Stop recording" : "Start recording"}
         >
-          {recording ? <MicOff className="h-10 w-10" /> : <Mic className="h-10 w-10" />}
-          {recording && (
-            <>
-              <span className="absolute inset-0 animate-ping rounded-full bg-rose-500/20" />
-              <span className="absolute -inset-2 animate-pulse rounded-full ring-2 ring-rose-500/30" />
-            </>
-          )}
+          <Orb
+            tone="emerald"
+            active={recording}
+            icon={
+              recording ? (
+                <MicOff className="h-10 w-10" strokeWidth={1.75} />
+              ) : (
+                <UserIcon className="h-10 w-10" strokeWidth={1.75} />
+              )
+            }
+            label="You"
+            status={recording ? `Recording · ${fmtTime(seconds)}` : "Mic off — tap to talk"}
+          />
         </button>
       </div>
-      <div className="text-center">
-        <div className="font-mono text-2xl tabular-nums">{fmtTime(seconds)}</div>
-        <div className="mt-1 text-xs text-muted-foreground">
-          {recording ? "Recording — tap mic to stop & transcribe" : "Tap mic to start recording your answer"}
-        </div>
-      </div>
+
       {draft && (
         <div className="w-full max-w-2xl rounded-xl border border-border/60 bg-background/40 p-4 text-sm text-muted-foreground">
           <div className="mb-1 text-[10px] font-mono uppercase tracking-wider text-foreground/60">Transcript</div>
           {draft}
         </div>
       )}
+    </div>
+  );
+}
+
+function Orb({
+  tone,
+  active,
+  icon,
+  label,
+  status,
+}: {
+  tone: "violet" | "emerald";
+  active: boolean;
+  icon: React.ReactNode;
+  label: string;
+  status: string;
+}) {
+  const palette =
+    tone === "violet"
+      ? {
+          core: "bg-gradient-to-br from-violet-500 to-indigo-600 text-white",
+          ring: "ring-violet-500/30",
+          glow: "shadow-[0_0_60px_-10px_rgba(139,92,246,0.55)]",
+          ripple: "border-violet-400/40",
+          dot: "bg-violet-400",
+          dotDim: "bg-violet-400/30",
+          label: "text-violet-300",
+        }
+      : {
+          core: "bg-gradient-to-br from-emerald-400 to-teal-500 text-white",
+          ring: "ring-emerald-400/30",
+          glow: "shadow-[0_0_60px_-10px_rgba(16,185,129,0.55)]",
+          ripple: "border-emerald-400/40",
+          dot: "bg-emerald-400",
+          dotDim: "bg-emerald-400/30",
+          label: "text-emerald-300",
+        };
+
+  return (
+    <div className="flex flex-col items-center">
+      <div className="relative flex h-44 w-44 items-center justify-center sm:h-52 sm:w-52">
+        {/* concentric rings */}
+        <span className={cn("absolute inset-0 rounded-full border", palette.ripple, active ? "opacity-80" : "opacity-25")} />
+        <span
+          className={cn(
+            "absolute inset-4 rounded-full border",
+            palette.ripple,
+            active ? "opacity-60 animate-ping" : "opacity-20",
+          )}
+          style={{ animationDuration: "2.4s" }}
+        />
+        <span
+          className={cn(
+            "absolute inset-8 rounded-full border",
+            palette.ripple,
+            active ? "opacity-50 animate-ping" : "opacity-15",
+          )}
+          style={{ animationDuration: "1.8s" }}
+        />
+        {/* core */}
+        <div
+          className={cn(
+            "relative flex h-24 w-24 items-center justify-center rounded-full ring-1 transition-all sm:h-28 sm:w-28",
+            palette.core,
+            palette.ring,
+            active && palette.glow,
+            active && "scale-105",
+          )}
+        >
+          {icon}
+        </div>
+      </div>
+
+      {/* equalizer dots */}
+      <div className="mt-2 flex items-end gap-1">
+        {Array.from({ length: 5 }).map((_, i) => (
+          <span
+            key={i}
+            className={cn(
+              "h-1.5 w-1.5 rounded-full transition-all",
+              active ? palette.dot : palette.dotDim,
+              active && "animate-pulse",
+            )}
+            style={active ? { animationDelay: `${i * 120}ms`, animationDuration: "900ms" } : undefined}
+          />
+        ))}
+      </div>
+
+      <div className={cn("mt-4 text-sm font-semibold", palette.label)}>{label}</div>
+      <div className="mt-0.5 text-xs text-muted-foreground">{status}</div>
     </div>
   );
 }
