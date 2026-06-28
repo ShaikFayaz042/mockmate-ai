@@ -53,7 +53,7 @@ function LoginPage() {
         </>
       }
     >
-      <Button variant="outline" className="w-full rounded-lg" onClick={() => toast("Google sign-in (demo)")}>
+      <Button variant="outline" className="w-full rounded-lg" onClick={() => fakeLogin()}>
         <GoogleGlyph /> Continue with Google
       </Button>
 
@@ -62,7 +62,7 @@ function LoginPage() {
       <form className="space-y-4" onSubmit={onSubmit}>
         <div className="space-y-1.5">
           <Label htmlFor="email">Email</Label>
-          <Input id="email" type="email" autoComplete="email" required placeholder="you@work.com" />
+          <Input id="email" type="email" autoComplete="email" required placeholder="you@work.com" value={email} onChange={(e) => setEmail(e.target.value)} />
         </div>
         <div className="space-y-1.5">
           <div className="flex items-center justify-between">
