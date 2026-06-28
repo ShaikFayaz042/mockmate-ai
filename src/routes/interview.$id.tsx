@@ -3,6 +3,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import {
   ArrowLeft,
   ArrowRight,
+  Bot,
   CheckCircle2,
   Loader2,
   Mic,
@@ -13,6 +14,7 @@ import {
   Sparkles,
   SquarePen,
   Timer,
+  User as UserIcon,
   Video,
   VideoOff,
   X,
