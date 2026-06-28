@@ -99,7 +99,7 @@ function MyInterviewsPage() {
       <div className="relative z-10 mx-auto flex w-full min-h-screen max-w-[1400px]">
         <AppSidebar active="interviews" />
 
-        <main className="flex-1 min-w-0 px-4 pt-20 pb-8 sm:px-8 sm:pt-10 sm:pb-10">
+        <main className="flex-1 min-w-0 px-4 pt-6 pb-8 pl-16 sm:px-8 sm:py-10">
           <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
             <div>
               <p className="font-mono text-xs uppercase tracking-widest text-muted-foreground">History</p>
