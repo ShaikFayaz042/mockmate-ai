@@ -51,6 +51,14 @@ const MOCK_INTERVIEWS = [
   { id: "i_5a0", date: "2026-06-11T16:30:00Z", category: "hr",        mode: "video", overallScore: 79, questions: 8  },
 ];
 
+const CREDIT_HISTORY = [
+  { id: "c_1", date: "2026-06-24T14:20:00Z", label: "Video · Technical", delta: -50 },
+  { id: "c_2", date: "2026-06-22T09:05:00Z", label: "Voice · HR",        delta: -50 },
+  { id: "c_3", date: "2026-06-20T08:00:00Z", label: "Top-up · Pro",      delta: +200 },
+  { id: "c_4", date: "2026-06-19T18:42:00Z", label: "Text · Mixed",      delta: -25 },
+  { id: "c_5", date: "2026-06-15T11:10:00Z", label: "Text · Technical",  delta: -25 },
+];
+
 const modeMeta: Record<Mode, { label: string; icon: typeof Mic; cost: number; desc: string }> = {
   text:  { label: "Text",  icon: FileText, cost: 25, desc: "Type your answers" },
   voice: { label: "Voice", icon: Mic,      cost: 50, desc: "Speak into the mic" },
