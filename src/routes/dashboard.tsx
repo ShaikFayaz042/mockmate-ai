@@ -89,6 +89,12 @@ function DashboardPage() {
   const [questionCount, setQuestionCount] = useState(10);
   const [isTimeBased, setIsTimeBased] = useState(true);
   const [loading, setLoading] = useState(false);
+  const [hydrating, setHydrating] = useState(true);
+
+  useEffect(() => {
+    const t = setTimeout(() => setHydrating(false), 450);
+    return () => clearTimeout(t);
+  }, []);
 
   const cost = modeMeta[mode].cost;
   const insufficient = user.creditsRemaining < cost;
