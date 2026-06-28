@@ -395,90 +395,117 @@ function DashboardPage() {
           </section>
 
           {/* Recent interviews */}
-          <section className="rounded-2xl border border-border/60 bg-card/60 shadow-elegant backdrop-blur-xl">
-            <div className="flex items-center justify-between border-b border-border/60 px-6 py-4">
-              <div>
-                <h2 className="text-lg font-semibold tracking-tight">Recent interviews</h2>
-                <p className="text-sm text-muted-foreground">Your last {interviews.length} sessions.</p>
+          <ErrorBoundary label="recent interviews">
+            <section className="rounded-2xl border border-border/60 bg-card/60 shadow-elegant backdrop-blur-xl">
+              <div className="flex items-center justify-between border-b border-border/60 px-6 py-4">
+                <div>
+                  <h2 className="text-lg font-semibold tracking-tight">Recent interviews</h2>
+                  <p className="text-sm text-muted-foreground">
+                    {hydrating ? "Loading…" : `Your last ${interviews.length} sessions.`}
+                  </p>
+                </div>
+                <Button variant="ghost" size="sm" className="rounded-full" onClick={() => navigate({ to: "/my-interviews" })}>
+                  View all <ArrowUpRight className="ml-1 h-4 w-4" />
+                </Button>
               </div>
-              <Button variant="ghost" size="sm" className="rounded-full" onClick={() => navigate({ to: "/" })}>
-                View all <ArrowUpRight className="ml-1 h-4 w-4" />
-              </Button>
-            </div>
 
-            {/* Desktop table */}
-            <div className="hidden overflow-x-auto md:block">
-              <table className="w-full text-left text-sm">
-                <thead>
-                  <tr className="border-b border-border/60 font-mono text-[11px] uppercase tracking-wider text-muted-foreground">
-                    <th className="px-6 py-3 font-medium">Date</th>
-                    <th className="px-6 py-3 font-medium">Type</th>
-                    <th className="px-6 py-3 font-medium">Mode</th>
-                    <th className="px-6 py-3 font-medium">Questions</th>
-                    <th className="px-6 py-3 font-medium">Score</th>
-                    <th className="px-6 py-3" />
-                  </tr>
-                </thead>
-                <tbody>
-                  {interviews.map((row) => {
-                    const cat = categoryMeta[row.category as Category];
-                    const md = modeMeta[row.mode as Mode];
-                    const Icon = md.icon;
-                    return (
-                      <tr key={row.id} className="border-b border-border/40 transition-colors hover:bg-muted/40">
-                        <td className="px-6 py-3.5 font-mono text-muted-foreground">{fmtDate(row.date)}</td>
-                        <td className="px-6 py-3.5">{cat.label}</td>
-                        <td className="px-6 py-3.5">
-                          <span className="inline-flex items-center gap-1.5 text-foreground">
-                            <Icon className="h-3.5 w-3.5 text-muted-foreground" /> {md.label}
-                          </span>
-                        </td>
-                        <td className="px-6 py-3.5 font-mono text-muted-foreground">{row.questions}</td>
-                        <td className="px-6 py-3.5">
+              {hydrating ? (
+                <div className="space-y-2 p-4">
+                  {Array.from({ length: 4 }).map((_, i) => (
+                    <div key={i} className="flex items-center gap-4 px-2 py-2">
+                      <Skeleton className="h-4 w-32" />
+                      <Skeleton className="h-4 w-24" />
+                      <Skeleton className="h-4 w-16" />
+                      <Skeleton className="ml-auto h-6 w-14 rounded-full" />
+                    </div>
+                  ))}
+                </div>
+              ) : interviews.length === 0 ? (
+                <EmptyState
+                  icon={Sparkles}
+                  title="No interviews yet"
+                  description="Start your first session above to see history, scores, and reports here."
+                  actionLabel="Start a session"
+                  onAction={handleStart}
+                />
+              ) : (
+                <>
+                  {/* Desktop table */}
+                  <div className="hidden overflow-x-auto md:block">
+                    <table className="w-full text-left text-sm">
+                      <thead>
+                        <tr className="border-b border-border/60 font-mono text-[11px] uppercase tracking-wider text-muted-foreground">
+                          <th className="px-6 py-3 font-medium">Date</th>
+                          <th className="px-6 py-3 font-medium">Type</th>
+                          <th className="px-6 py-3 font-medium">Mode</th>
+                          <th className="px-6 py-3 font-medium">Questions</th>
+                          <th className="px-6 py-3 font-medium">Score</th>
+                          <th className="px-6 py-3" />
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {interviews.map((row) => {
+                          const cat = categoryMeta[row.category as Category];
+                          const md = modeMeta[row.mode as Mode];
+                          const Icon = md.icon;
+                          return (
+                            <tr key={row.id} className="border-b border-border/40 transition-colors hover:bg-muted/40">
+                              <td className="px-6 py-3.5 font-mono text-muted-foreground">{fmtDate(row.date)}</td>
+                              <td className="px-6 py-3.5">{cat.label}</td>
+                              <td className="px-6 py-3.5">
+                                <span className="inline-flex items-center gap-1.5 text-foreground">
+                                  <Icon className="h-3.5 w-3.5 text-muted-foreground" /> {md.label}
+                                </span>
+                              </td>
+                              <td className="px-6 py-3.5 font-mono text-muted-foreground">{row.questions}</td>
+                              <td className="px-6 py-3.5">
+                                <span className={cn("inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ring-1 ring-inset", scoreTone(row.overallScore))}>
+                                  {row.overallScore}%
+                                </span>
+                              </td>
+                              <td className="px-6 py-3.5 text-right">
+                                <Button variant="ghost" size="sm" className="rounded-full" onClick={() => toast("Opening report…")}>
+                                  View <ArrowUpRight className="ml-1 h-3.5 w-3.5" />
+                                </Button>
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+
+                  {/* Mobile list */}
+                  <ul className="divide-y divide-border/40 md:hidden">
+                    {interviews.map((row) => {
+                      const cat = categoryMeta[row.category as Category];
+                      const md = modeMeta[row.mode as Mode];
+                      const Icon = md.icon;
+                      return (
+                        <li key={row.id} className="flex items-center justify-between px-5 py-4">
+                          <div className="min-w-0">
+                            <div className="flex items-center gap-2 text-sm font-medium">
+                              {cat.label}
+                              <span className="text-muted-foreground">·</span>
+                              <span className="inline-flex items-center gap-1 text-muted-foreground">
+                                <Icon className="h-3.5 w-3.5" />{md.label}
+                              </span>
+                            </div>
+                            <div className="mt-0.5 font-mono text-xs text-muted-foreground">
+                              {fmtDate(row.date)} · {row.questions} Q
+                            </div>
+                          </div>
                           <span className={cn("inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ring-1 ring-inset", scoreTone(row.overallScore))}>
                             {row.overallScore}%
                           </span>
-                        </td>
-                        <td className="px-6 py-3.5 text-right">
-                          <Button variant="ghost" size="sm" className="rounded-full" onClick={() => toast("Opening report…")}>
-                            View <ArrowUpRight className="ml-1 h-3.5 w-3.5" />
-                          </Button>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
-
-            {/* Mobile list */}
-            <ul className="divide-y divide-border/40 md:hidden">
-              {interviews.map((row) => {
-                const cat = categoryMeta[row.category as Category];
-                const md = modeMeta[row.mode as Mode];
-                const Icon = md.icon;
-                return (
-                  <li key={row.id} className="flex items-center justify-between px-5 py-4">
-                    <div className="min-w-0">
-                      <div className="flex items-center gap-2 text-sm font-medium">
-                        {cat.label}
-                        <span className="text-muted-foreground">·</span>
-                        <span className="inline-flex items-center gap-1 text-muted-foreground">
-                          <Icon className="h-3.5 w-3.5" />{md.label}
-                        </span>
-                      </div>
-                      <div className="mt-0.5 font-mono text-xs text-muted-foreground">
-                        {fmtDate(row.date)} · {row.questions} Q
-                      </div>
-                    </div>
-                    <span className={cn("inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ring-1 ring-inset", scoreTone(row.overallScore))}>
-                      {row.overallScore}%
-                    </span>
-                  </li>
-                );
-              })}
-            </ul>
-          </section>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </>
+              )}
+            </section>
+          </ErrorBoundary>
 
           <div className="h-10" />
         </main>
