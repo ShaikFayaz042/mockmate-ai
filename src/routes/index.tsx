@@ -365,12 +365,12 @@ function Landing() {
           <div className="pointer-events-none absolute inset-0 bg-mesh opacity-80" />
           <div className="relative">
             <h2 className="text-balance text-3xl font-semibold tracking-tight sm:text-4xl">
-              Your next interview is closer than you think.
+              Your next interview is in a week.
               <br />
-              <span className="text-gradient-primary">Run your first mock today.</span>
+              <span className="text-gradient-primary">Be ready by Sunday.</span>
             </h2>
             <p className="mx-auto mt-4 max-w-xl text-sm text-muted-foreground">
-              Three free interviews to start. No card, no commitment.
+              Start with three free interviews. No card, no commitment.
             </p>
             <div className="mt-7 flex flex-wrap justify-center gap-3">
               <Button asChild size="lg" className="rounded-full shadow-glow">
