@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   ArrowUpRight,
   Award,
@@ -8,7 +8,10 @@ import {
   Coins,
   FileText,
   Mic,
+  Minus,
+  Plus,
   Shuffle,
+  Sparkles,
   Trophy,
   Users,
   Video,
@@ -18,6 +21,10 @@ import { toast } from "sonner";
 import { AppSidebar } from "@/components/app-sidebar";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { ErrorBoundary } from "@/components/error-boundary";
+import { EmptyState } from "@/components/empty-state";
 import { cn } from "@/lib/utils";
 
 
@@ -42,6 +49,14 @@ const MOCK_INTERVIEWS = [
   { id: "i_7c5", date: "2026-06-19T18:42:00Z", category: "mix",       mode: "text",  overallScore: 91, questions: 12 },
   { id: "i_6b3", date: "2026-06-15T11:10:00Z", category: "technical", mode: "text",  overallScore: 68, questions: 10 },
   { id: "i_5a0", date: "2026-06-11T16:30:00Z", category: "hr",        mode: "video", overallScore: 79, questions: 8  },
+];
+
+const CREDIT_HISTORY = [
+  { id: "c_1", date: "2026-06-24T14:20:00Z", label: "Video · Technical", delta: -50 },
+  { id: "c_2", date: "2026-06-22T09:05:00Z", label: "Voice · HR",        delta: -50 },
+  { id: "c_3", date: "2026-06-20T08:00:00Z", label: "Top-up · Pro",      delta: +200 },
+  { id: "c_4", date: "2026-06-19T18:42:00Z", label: "Text · Mixed",      delta: -25 },
+  { id: "c_5", date: "2026-06-15T11:10:00Z", label: "Text · Technical",  delta: -25 },
 ];
 
 const modeMeta: Record<Mode, { label: string; icon: typeof Mic; cost: number; desc: string }> = {
@@ -74,6 +89,12 @@ function DashboardPage() {
   const [questionCount, setQuestionCount] = useState(10);
   const [isTimeBased, setIsTimeBased] = useState(true);
   const [loading, setLoading] = useState(false);
+  const [hydrating, setHydrating] = useState(true);
+
+  useEffect(() => {
+    const t = setTimeout(() => setHydrating(false), 450);
+    return () => clearTimeout(t);
+  }, []);
 
   const cost = modeMeta[mode].cost;
   const insufficient = user.creditsRemaining < cost;
@@ -128,12 +149,56 @@ function DashboardPage() {
           </div>
 
           {/* Stats cards */}
-          <section className="mb-10 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
-            <StatCard label="Total interviews" value={stats.total} icon={BarChart3} hint="All-time" trend="+2 this week" tone="primary" />
-            <StatCard label="Average score"   value={`${stats.avg}%`}  icon={Trophy}   hint="Across all sessions" trend="+4 pts" tone="emerald" />
-            <StatCard label="Best score"      value={`${stats.best}%`} icon={Award}    hint="Personal best"       trend="Mixed · Text" tone="amber" />
-            <StatCard label="Credits left"    value={stats.credits}    icon={Coins}    hint={`~${Math.floor(stats.credits / 25)} text rounds`} trend="Pro plan" tone="violet" />
-          </section>
+          <ErrorBoundary label="stats">
+            <section className="mb-10 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
+              {hydrating ? (
+                Array.from({ length: 4 }).map((_, i) => <StatSkeleton key={i} />)
+              ) : (
+                <>
+                  <StatCard label="Total interviews" value={stats.total} icon={BarChart3} hint="All-time" trend="+2 this week" tone="primary" />
+                  <StatCard label="Average score"   value={`${stats.avg}%`}  icon={Trophy}   hint="Across all sessions" trend="+4 pts" tone="emerald" />
+                  <StatCard label="Best score"      value={`${stats.best}%`} icon={Award}    hint="Personal best"       trend="Mixed · Text" tone="amber" />
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <button className="text-left">
+                        <StatCard label="Credits left"    value={stats.credits}    icon={Coins}    hint={`~${Math.floor(stats.credits / 25)} text rounds`} trend="Click for history" tone="violet" />
+                      </button>
+                    </PopoverTrigger>
+                    <PopoverContent align="end" className="w-80 border-border/60 bg-card/95 backdrop-blur-xl">
+                      <div className="mb-3 flex items-center justify-between">
+                        <div>
+                          <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">Credits</p>
+                          <p className="text-lg font-semibold">{stats.credits} <span className="text-xs font-normal text-muted-foreground">remaining</span></p>
+                        </div>
+                        <Button size="sm" variant="outline" className="rounded-full" onClick={() => navigate({ to: "/upgrade" })}>
+                          <Sparkles className="mr-1 h-3.5 w-3.5" /> Top up
+                        </Button>
+                      </div>
+                      <div className="space-y-1">
+                        <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">Recent activity</p>
+                        <ul className="divide-y divide-border/40">
+                          {CREDIT_HISTORY.map((c) => (
+                            <li key={c.id} className="flex items-center justify-between py-2 text-sm">
+                              <div className="min-w-0">
+                                <div className="truncate">{c.label}</div>
+                                <div className="font-mono text-[10px] text-muted-foreground">{fmtDate(c.date)}</div>
+                              </div>
+                              <span className={cn(
+                                "inline-flex items-center gap-0.5 font-mono text-xs",
+                                c.delta >= 0 ? "text-emerald-500" : "text-muted-foreground"
+                              )}>
+                                {c.delta >= 0 ? <Plus className="h-3 w-3" /> : <Minus className="h-3 w-3" />}{Math.abs(c.delta)}
+                              </span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    </PopoverContent>
+                  </Popover>
+                </>
+              )}
+            </section>
+          </ErrorBoundary>
 
           {/* Interview customization — monolithic dark glass */}
           <section className="mb-10 overflow-hidden rounded-2xl border border-border/60 bg-card/70 p-6 shadow-elegant backdrop-blur-xl sm:p-8">
@@ -330,90 +395,117 @@ function DashboardPage() {
           </section>
 
           {/* Recent interviews */}
-          <section className="rounded-2xl border border-border/60 bg-card/60 shadow-elegant backdrop-blur-xl">
-            <div className="flex items-center justify-between border-b border-border/60 px-6 py-4">
-              <div>
-                <h2 className="text-lg font-semibold tracking-tight">Recent interviews</h2>
-                <p className="text-sm text-muted-foreground">Your last {interviews.length} sessions.</p>
+          <ErrorBoundary label="recent interviews">
+            <section className="rounded-2xl border border-border/60 bg-card/60 shadow-elegant backdrop-blur-xl">
+              <div className="flex items-center justify-between border-b border-border/60 px-6 py-4">
+                <div>
+                  <h2 className="text-lg font-semibold tracking-tight">Recent interviews</h2>
+                  <p className="text-sm text-muted-foreground">
+                    {hydrating ? "Loading…" : `Your last ${interviews.length} sessions.`}
+                  </p>
+                </div>
+                <Button variant="ghost" size="sm" className="rounded-full" onClick={() => navigate({ to: "/my-interviews" })}>
+                  View all <ArrowUpRight className="ml-1 h-4 w-4" />
+                </Button>
               </div>
-              <Button variant="ghost" size="sm" className="rounded-full" onClick={() => navigate({ to: "/" })}>
-                View all <ArrowUpRight className="ml-1 h-4 w-4" />
-              </Button>
-            </div>
 
-            {/* Desktop table */}
-            <div className="hidden overflow-x-auto md:block">
-              <table className="w-full text-left text-sm">
-                <thead>
-                  <tr className="border-b border-border/60 font-mono text-[11px] uppercase tracking-wider text-muted-foreground">
-                    <th className="px-6 py-3 font-medium">Date</th>
-                    <th className="px-6 py-3 font-medium">Type</th>
-                    <th className="px-6 py-3 font-medium">Mode</th>
-                    <th className="px-6 py-3 font-medium">Questions</th>
-                    <th className="px-6 py-3 font-medium">Score</th>
-                    <th className="px-6 py-3" />
-                  </tr>
-                </thead>
-                <tbody>
-                  {interviews.map((row) => {
-                    const cat = categoryMeta[row.category as Category];
-                    const md = modeMeta[row.mode as Mode];
-                    const Icon = md.icon;
-                    return (
-                      <tr key={row.id} className="border-b border-border/40 transition-colors hover:bg-muted/40">
-                        <td className="px-6 py-3.5 font-mono text-muted-foreground">{fmtDate(row.date)}</td>
-                        <td className="px-6 py-3.5">{cat.label}</td>
-                        <td className="px-6 py-3.5">
-                          <span className="inline-flex items-center gap-1.5 text-foreground">
-                            <Icon className="h-3.5 w-3.5 text-muted-foreground" /> {md.label}
-                          </span>
-                        </td>
-                        <td className="px-6 py-3.5 font-mono text-muted-foreground">{row.questions}</td>
-                        <td className="px-6 py-3.5">
+              {hydrating ? (
+                <div className="space-y-2 p-4">
+                  {Array.from({ length: 4 }).map((_, i) => (
+                    <div key={i} className="flex items-center gap-4 px-2 py-2">
+                      <Skeleton className="h-4 w-32" />
+                      <Skeleton className="h-4 w-24" />
+                      <Skeleton className="h-4 w-16" />
+                      <Skeleton className="ml-auto h-6 w-14 rounded-full" />
+                    </div>
+                  ))}
+                </div>
+              ) : interviews.length === 0 ? (
+                <EmptyState
+                  icon={Sparkles}
+                  title="No interviews yet"
+                  description="Start your first session above to see history, scores, and reports here."
+                  actionLabel="Start a session"
+                  onAction={handleStart}
+                />
+              ) : (
+                <>
+                  {/* Desktop table */}
+                  <div className="hidden overflow-x-auto md:block">
+                    <table className="w-full text-left text-sm">
+                      <thead>
+                        <tr className="border-b border-border/60 font-mono text-[11px] uppercase tracking-wider text-muted-foreground">
+                          <th className="px-6 py-3 font-medium">Date</th>
+                          <th className="px-6 py-3 font-medium">Type</th>
+                          <th className="px-6 py-3 font-medium">Mode</th>
+                          <th className="px-6 py-3 font-medium">Questions</th>
+                          <th className="px-6 py-3 font-medium">Score</th>
+                          <th className="px-6 py-3" />
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {interviews.map((row) => {
+                          const cat = categoryMeta[row.category as Category];
+                          const md = modeMeta[row.mode as Mode];
+                          const Icon = md.icon;
+                          return (
+                            <tr key={row.id} className="border-b border-border/40 transition-colors hover:bg-muted/40">
+                              <td className="px-6 py-3.5 font-mono text-muted-foreground">{fmtDate(row.date)}</td>
+                              <td className="px-6 py-3.5">{cat.label}</td>
+                              <td className="px-6 py-3.5">
+                                <span className="inline-flex items-center gap-1.5 text-foreground">
+                                  <Icon className="h-3.5 w-3.5 text-muted-foreground" /> {md.label}
+                                </span>
+                              </td>
+                              <td className="px-6 py-3.5 font-mono text-muted-foreground">{row.questions}</td>
+                              <td className="px-6 py-3.5">
+                                <span className={cn("inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ring-1 ring-inset", scoreTone(row.overallScore))}>
+                                  {row.overallScore}%
+                                </span>
+                              </td>
+                              <td className="px-6 py-3.5 text-right">
+                                <Button variant="ghost" size="sm" className="rounded-full" onClick={() => toast("Opening report…")}>
+                                  View <ArrowUpRight className="ml-1 h-3.5 w-3.5" />
+                                </Button>
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+
+                  {/* Mobile list */}
+                  <ul className="divide-y divide-border/40 md:hidden">
+                    {interviews.map((row) => {
+                      const cat = categoryMeta[row.category as Category];
+                      const md = modeMeta[row.mode as Mode];
+                      const Icon = md.icon;
+                      return (
+                        <li key={row.id} className="flex items-center justify-between px-5 py-4">
+                          <div className="min-w-0">
+                            <div className="flex items-center gap-2 text-sm font-medium">
+                              {cat.label}
+                              <span className="text-muted-foreground">·</span>
+                              <span className="inline-flex items-center gap-1 text-muted-foreground">
+                                <Icon className="h-3.5 w-3.5" />{md.label}
+                              </span>
+                            </div>
+                            <div className="mt-0.5 font-mono text-xs text-muted-foreground">
+                              {fmtDate(row.date)} · {row.questions} Q
+                            </div>
+                          </div>
                           <span className={cn("inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ring-1 ring-inset", scoreTone(row.overallScore))}>
                             {row.overallScore}%
                           </span>
-                        </td>
-                        <td className="px-6 py-3.5 text-right">
-                          <Button variant="ghost" size="sm" className="rounded-full" onClick={() => toast("Opening report…")}>
-                            View <ArrowUpRight className="ml-1 h-3.5 w-3.5" />
-                          </Button>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
-
-            {/* Mobile list */}
-            <ul className="divide-y divide-border/40 md:hidden">
-              {interviews.map((row) => {
-                const cat = categoryMeta[row.category as Category];
-                const md = modeMeta[row.mode as Mode];
-                const Icon = md.icon;
-                return (
-                  <li key={row.id} className="flex items-center justify-between px-5 py-4">
-                    <div className="min-w-0">
-                      <div className="flex items-center gap-2 text-sm font-medium">
-                        {cat.label}
-                        <span className="text-muted-foreground">·</span>
-                        <span className="inline-flex items-center gap-1 text-muted-foreground">
-                          <Icon className="h-3.5 w-3.5" />{md.label}
-                        </span>
-                      </div>
-                      <div className="mt-0.5 font-mono text-xs text-muted-foreground">
-                        {fmtDate(row.date)} · {row.questions} Q
-                      </div>
-                    </div>
-                    <span className={cn("inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ring-1 ring-inset", scoreTone(row.overallScore))}>
-                      {row.overallScore}%
-                    </span>
-                  </li>
-                );
-              })}
-            </ul>
-          </section>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </>
+              )}
+            </section>
+          </ErrorBoundary>
 
           <div className="h-10" />
         </main>
@@ -446,6 +538,22 @@ function StatCard({
       <div className="relative mt-2 flex items-center justify-between text-xs text-muted-foreground">
         <span>{hint}</span>
         <span className="font-mono">{trend}</span>
+      </div>
+    </div>
+  );
+}
+
+function StatSkeleton() {
+  return (
+    <div className="rounded-2xl border border-border/60 bg-card/40 p-5 shadow-elegant backdrop-blur-xl">
+      <div className="flex items-center justify-between">
+        <Skeleton className="h-3 w-24" />
+        <Skeleton className="h-4 w-4 rounded" />
+      </div>
+      <Skeleton className="mt-4 h-8 w-20" />
+      <div className="mt-3 flex items-center justify-between">
+        <Skeleton className="h-3 w-20" />
+        <Skeleton className="h-3 w-14" />
       </div>
     </div>
   );
