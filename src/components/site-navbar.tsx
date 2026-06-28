@@ -50,12 +50,20 @@ export function SiteNavbar() {
 
         <div className="flex items-center gap-2">
           <ThemeToggle />
-          <Button asChild variant="ghost" size="sm" className="hidden sm:inline-flex rounded-full">
-            <Link to="/login">Log in</Link>
-          </Button>
-          <Button asChild size="sm" className="hidden sm:inline-flex rounded-full shadow-glow">
-            <Link to="/signup">Get started</Link>
-          </Button>
+          {isAuthed ? (
+            <Button asChild size="sm" className="hidden sm:inline-flex rounded-full shadow-glow">
+              <Link to="/dashboard">Open dashboard</Link>
+            </Button>
+          ) : (
+            <>
+              <Button asChild variant="ghost" size="sm" className="hidden sm:inline-flex rounded-full">
+                <Link to="/login">Log in</Link>
+              </Button>
+              <Button asChild size="sm" className="hidden sm:inline-flex rounded-full shadow-glow">
+                <Link to="/signup">Get started</Link>
+              </Button>
+            </>
+          )}
           <button
             onClick={() => setOpen((v) => !v)}
             className="ml-1 inline-flex h-9 w-9 items-center justify-center rounded-full border border-border/60 md:hidden"
