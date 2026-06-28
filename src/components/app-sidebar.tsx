@@ -36,6 +36,8 @@ function NavBody({
   credits: number;
   onNavigate?: () => void;
 }) {
+  const { logout } = useAuth();
+  const navigate = useNavigate();
   return (
     <>
       <BrandMark />
