@@ -15,6 +15,8 @@ import {
 import { SiteNavbar } from "@/components/site-navbar";
 import { SiteFooter } from "@/components/site-footer";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/hooks/use-auth";
+import { LandingAuthed } from "@/components/landing-authed";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -125,6 +127,8 @@ const PLANS = [
 ];
 
 function Landing() {
+  const { user, hydrated } = useAuth();
+  if (hydrated && user) return <LandingAuthed user={user} />;
   return (
     <div className="relative min-h-screen overflow-hidden bg-background">
       <SiteNavbar />

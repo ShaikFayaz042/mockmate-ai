@@ -1,10 +1,11 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState, type FormEvent } from "react";
 import { toast } from "sonner";
 import { AuthShell } from "@/components/auth-shell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useAuth } from "@/hooks/use-auth";
 
 export const Route = createFileRoute("/login")({
   head: () => ({
@@ -18,15 +19,25 @@ export const Route = createFileRoute("/login")({
 
 function LoginPage() {
   const [loading, setLoading] = useState(false);
+  const [email, setEmail] = useState("");
+  const { login } = useAuth();
+  const navigate = useNavigate();
 
-  const onSubmit = (e: FormEvent) => {
-    e.preventDefault();
+  const fakeLogin = (e?: FormEvent) => {
+    e?.preventDefault();
     setLoading(true);
     setTimeout(() => {
+      const mail = email || "demo@mockmate.ai";
+      const name = mail.split("@")[0].replace(/[._-]/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
+      login({ name, email: mail });
       setLoading(false);
-      toast.success("Signed in (demo)", { description: "Wire to your backend to complete login." });
-    }, 700);
+      toast.success("Signed in", { description: "Welcome back to MockMate." });
+      navigate({ to: "/" });
+    }, 500);
   };
+
+  const onSubmit = fakeLogin;
+
 
   return (
     <AuthShell
@@ -42,7 +53,7 @@ function LoginPage() {
         </>
       }
     >
-      <Button variant="outline" className="w-full rounded-lg" onClick={() => toast("Google sign-in (demo)")}>
+      <Button variant="outline" className="w-full rounded-lg" onClick={() => fakeLogin()}>
         <GoogleGlyph /> Continue with Google
       </Button>
 
@@ -51,7 +62,7 @@ function LoginPage() {
       <form className="space-y-4" onSubmit={onSubmit}>
         <div className="space-y-1.5">
           <Label htmlFor="email">Email</Label>
-          <Input id="email" type="email" autoComplete="email" required placeholder="you@work.com" />
+          <Input id="email" type="email" autoComplete="email" required placeholder="you@work.com" value={email} onChange={(e) => setEmail(e.target.value)} />
         </div>
         <div className="space-y-1.5">
           <div className="flex items-center justify-between">
