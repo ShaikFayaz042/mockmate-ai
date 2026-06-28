@@ -40,32 +40,32 @@ const FEATURES = [
   {
     icon: Brain,
     title: "Adaptive interviewer",
-    body: "Questions adjust to your target role, difficulty, and the answers you give — no two sessions feel the same.",
+    body: "Questions adapt to your role, skills, and answers — no two sessions feel the same.",
   },
   {
     icon: LineChart,
-    title: "Scored reports",
-    body: "Every session ends with an overall score, technical depth, communication, and problem-solving breakdown.",
+    title: "Detailed feedback",
+    body: "Scores for clarity, depth, structure, and confidence — with line-by-line suggestions.",
   },
   {
     icon: Target,
-    title: "Role & difficulty tuned",
-    body: "Pick a category, set Easy / Medium / Hard, choose 5–20 questions. The interview shapes around it.",
+    title: "Target-role tuned",
+    body: "Pick a role (SDE, PM, DS…) and difficulty. We tailor the interview around it.",
   },
   {
     icon: ShieldCheck,
-    title: "You own your data",
-    body: "Profile, resume, and session history live in your account. Delete anything from Settings, anytime.",
+    title: "Private by default",
+    body: "Your sessions and recordings stay yours. Delete anything, anytime.",
   },
   {
     icon: Zap,
-    title: "Two timer modes",
-    body: "Time-based per question for sharp reps, or a fixed total time for a full mock-interview feel.",
+    title: "Fast, low-latency",
+    body: "Streamed responses keep the conversation flowing — no awkward gaps.",
   },
   {
     icon: Sparkles,
-    title: "Searchable history",
-    body: "Every interview lands in My Interviews with filters, status, and a one-click report.",
+    title: "Beautiful history",
+    body: "Every interview, transcript, and score lives in a clean, searchable timeline.",
   },
 ];
 
