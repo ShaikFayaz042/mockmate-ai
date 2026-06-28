@@ -543,6 +543,22 @@ function StatCard({
   );
 }
 
+function StatSkeleton() {
+  return (
+    <div className="rounded-2xl border border-border/60 bg-card/40 p-5 shadow-elegant backdrop-blur-xl">
+      <div className="flex items-center justify-between">
+        <Skeleton className="h-3 w-24" />
+        <Skeleton className="h-4 w-4 rounded" />
+      </div>
+      <Skeleton className="mt-4 h-8 w-20" />
+      <div className="mt-3 flex items-center justify-between">
+        <Skeleton className="h-3 w-20" />
+        <Skeleton className="h-3 w-14" />
+      </div>
+    </div>
+  );
+}
+
 function Label({ children }: { children: React.ReactNode }) {
   return (
     <div className="ml-1 font-mono text-[11px] uppercase tracking-widest text-muted-foreground">
