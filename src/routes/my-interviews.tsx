@@ -148,95 +148,120 @@ function MyInterviewsPage() {
           </div>
 
           {/* Table */}
-          <section className="rounded-2xl border border-border/60 bg-card/60 shadow-elegant backdrop-blur-xl">
-            <div className="hidden overflow-x-auto md:block">
-              <table className="w-full text-left text-sm">
-                <thead>
-                  <tr className="border-b border-border/60 font-mono text-[11px] uppercase tracking-wider text-muted-foreground">
-                    <th className="px-6 py-3 font-medium">Date</th>
-                    <th className="px-6 py-3 font-medium">Type</th>
-                    <th className="px-6 py-3 font-medium">Mode</th>
-                    <th className="px-6 py-3 font-medium">Questions</th>
-                    <th className="px-6 py-3 font-medium">Duration</th>
-                    <th className="px-6 py-3 font-medium">Score</th>
-                    <th className="px-6 py-3" />
-                  </tr>
-                </thead>
-                <tbody>
-                  {rows.map((row) => {
-                    const cat = categoryMeta[row.category as Category];
-                    const md = modeMeta[row.mode as Mode];
-                    const Icon = md.icon;
-                    return (
-                      <tr key={row.id} className="border-b border-border/40 transition-colors hover:bg-muted/40">
-                        <td className="px-6 py-3.5 font-mono text-muted-foreground">{fmtDate(row.date)}</td>
-                        <td className="px-6 py-3.5">{cat.label}</td>
-                        <td className="px-6 py-3.5">
-                          <span className="inline-flex items-center gap-1.5">
-                            <Icon className="h-3.5 w-3.5 text-muted-foreground" /> {md.label}
-                          </span>
-                        </td>
-                        <td className="px-6 py-3.5 font-mono text-muted-foreground">{row.questions}</td>
-                        <td className="px-6 py-3.5 font-mono text-muted-foreground">{row.duration}m</td>
-                        <td className="px-6 py-3.5">
-                          <span className={cn("inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ring-1 ring-inset", scoreTone(row.overallScore))}>
-                            {row.overallScore}%
-                          </span>
-                        </td>
-                        <td className="px-6 py-3.5 text-right">
-                          <div className="flex justify-end gap-1">
-                            <Button asChild variant="ghost" size="sm" className="rounded-full">
-                              <Link to="/report/$id" params={{ id: row.id }}>
-                                View report <ArrowUpRight className="ml-1 h-3.5 w-3.5" />
-                              </Link>
-                            </Button>
-                            <Button variant="ghost" size="icon" className="rounded-full text-muted-foreground hover:text-destructive" onClick={() => toast("Deleted", { description: row.id })}>
-                              <Trash2 className="h-3.5 w-3.5" />
-                            </Button>
-                          </div>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-              {rows.length === 0 && (
-                <div className="px-6 py-12 text-center text-sm text-muted-foreground">No interviews match these filters.</div>
-              )}
-            </div>
+          <ErrorBoundary label="interviews list">
+            <section className="rounded-2xl border border-border/60 bg-card/60 shadow-elegant backdrop-blur-xl">
+              {hydrating ? (
+                <div className="space-y-2 p-4">
+                  {Array.from({ length: 6 }).map((_, i) => (
+                    <div key={i} className="flex items-center gap-4 px-2 py-2.5">
+                      <Skeleton className="h-4 w-28" />
+                      <Skeleton className="h-4 w-20" />
+                      <Skeleton className="h-4 w-16" />
+                      <Skeleton className="h-4 w-12" />
+                      <Skeleton className="ml-auto h-6 w-14 rounded-full" />
+                      <Skeleton className="h-7 w-24 rounded-full" />
+                    </div>
+                  ))}
+                </div>
+              ) : rows.length === 0 ? (
+                <EmptyState
+                  icon={Search}
+                  title={INTERVIEWS.length === 0 ? "No interviews yet" : "No matches"}
+                  description={
+                    INTERVIEWS.length === 0
+                      ? "Once you complete a session, it'll show up here with full reports and history."
+                      : "Try clearing the search or filters to see all your sessions."
+                  }
+                  actionLabel={INTERVIEWS.length === 0 ? "Start your first interview" : "Clear filters"}
+                  onAction={INTERVIEWS.length === 0 ? () => (window.location.href = "/dashboard") : clearFilters}
+                />
+              ) : (
+                <>
+                  <div className="hidden overflow-x-auto md:block">
+                    <table className="w-full text-left text-sm">
+                      <thead>
+                        <tr className="border-b border-border/60 font-mono text-[11px] uppercase tracking-wider text-muted-foreground">
+                          <th className="px-6 py-3 font-medium">Date</th>
+                          <th className="px-6 py-3 font-medium">Type</th>
+                          <th className="px-6 py-3 font-medium">Mode</th>
+                          <th className="px-6 py-3 font-medium">Questions</th>
+                          <th className="px-6 py-3 font-medium">Duration</th>
+                          <th className="px-6 py-3 font-medium">Score</th>
+                          <th className="px-6 py-3" />
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {rows.map((row) => {
+                          const cat = categoryMeta[row.category as Category];
+                          const md = modeMeta[row.mode as Mode];
+                          const Icon = md.icon;
+                          return (
+                            <tr key={row.id} className="border-b border-border/40 transition-colors hover:bg-muted/40">
+                              <td className="px-6 py-3.5 font-mono text-muted-foreground">{fmtDate(row.date)}</td>
+                              <td className="px-6 py-3.5">{cat.label}</td>
+                              <td className="px-6 py-3.5">
+                                <span className="inline-flex items-center gap-1.5">
+                                  <Icon className="h-3.5 w-3.5 text-muted-foreground" /> {md.label}
+                                </span>
+                              </td>
+                              <td className="px-6 py-3.5 font-mono text-muted-foreground">{row.questions}</td>
+                              <td className="px-6 py-3.5 font-mono text-muted-foreground">{row.duration}m</td>
+                              <td className="px-6 py-3.5">
+                                <span className={cn("inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ring-1 ring-inset", scoreTone(row.overallScore))}>
+                                  {row.overallScore}%
+                                </span>
+                              </td>
+                              <td className="px-6 py-3.5 text-right">
+                                <div className="flex justify-end gap-1">
+                                  <Button asChild variant="ghost" size="sm" className="rounded-full">
+                                    <Link to="/report/$id" params={{ id: row.id }}>
+                                      View report <ArrowUpRight className="ml-1 h-3.5 w-3.5" />
+                                    </Link>
+                                  </Button>
+                                  <Button variant="ghost" size="icon" className="rounded-full text-muted-foreground hover:text-destructive" onClick={() => toast("Deleted", { description: row.id })}>
+                                    <Trash2 className="h-3.5 w-3.5" />
+                                  </Button>
+                                </div>
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
 
-            <ul className="divide-y divide-border/40 md:hidden">
-              {rows.map((row) => {
-                const cat = categoryMeta[row.category as Category];
-                const md = modeMeta[row.mode as Mode];
-                const Icon = md.icon;
-                return (
-                  <li key={row.id}>
-                    <Link to="/report/$id" params={{ id: row.id }} className="flex items-center justify-between px-5 py-4 transition hover:bg-muted/40">
-                      <div className="min-w-0">
-                        <div className="flex items-center gap-2 text-sm font-medium">
-                          {cat.label}
-                          <span className="text-muted-foreground">·</span>
-                          <span className="inline-flex items-center gap-1 text-muted-foreground">
-                            <Icon className="h-3.5 w-3.5" />{md.label}
-                          </span>
-                        </div>
-                        <div className="mt-0.5 font-mono text-xs text-muted-foreground">
-                          {fmtDate(row.date)} · {row.questions} Q · {row.duration}m
-                        </div>
-                      </div>
-                      <span className={cn("inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ring-1 ring-inset", scoreTone(row.overallScore))}>
-                        {row.overallScore}%
-                      </span>
-                    </Link>
-                  </li>
-                );
-              })}
-              {rows.length === 0 && (
-                <li className="px-5 py-12 text-center text-sm text-muted-foreground">No interviews match these filters.</li>
+                  <ul className="divide-y divide-border/40 md:hidden">
+                    {rows.map((row) => {
+                      const cat = categoryMeta[row.category as Category];
+                      const md = modeMeta[row.mode as Mode];
+                      const Icon = md.icon;
+                      return (
+                        <li key={row.id}>
+                          <Link to="/report/$id" params={{ id: row.id }} className="flex items-center justify-between px-5 py-4 transition hover:bg-muted/40">
+                            <div className="min-w-0">
+                              <div className="flex items-center gap-2 text-sm font-medium">
+                                {cat.label}
+                                <span className="text-muted-foreground">·</span>
+                                <span className="inline-flex items-center gap-1 text-muted-foreground">
+                                  <Icon className="h-3.5 w-3.5" />{md.label}
+                                </span>
+                              </div>
+                              <div className="mt-0.5 font-mono text-xs text-muted-foreground">
+                                {fmtDate(row.date)} · {row.questions} Q · {row.duration}m
+                              </div>
+                            </div>
+                            <span className={cn("inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ring-1 ring-inset", scoreTone(row.overallScore))}>
+                              {row.overallScore}%
+                            </span>
+                          </Link>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </>
               )}
-            </ul>
-          </section>
+            </section>
+          </ErrorBoundary>
 
           <div className="h-10" />
         </main>
