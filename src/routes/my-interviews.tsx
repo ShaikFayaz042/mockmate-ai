@@ -69,6 +69,18 @@ function MyInterviewsPage() {
   const [q, setQ] = useState("");
   const [modeFilter, setModeFilter] = useState<"all" | Mode>("all");
   const [catFilter, setCatFilter] = useState<"all" | Category>("all");
+  const [hydrating, setHydrating] = useState(true);
+
+  useEffect(() => {
+    const t = setTimeout(() => setHydrating(false), 450);
+    return () => clearTimeout(t);
+  }, []);
+
+  const clearFilters = () => {
+    setQ("");
+    setModeFilter("all");
+    setCatFilter("all");
+  };
 
   const rows = useMemo(() => {
     return INTERVIEWS.filter((r) => {
