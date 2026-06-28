@@ -23,6 +23,7 @@ import { Button } from "@/components/ui/button";
 import { BrandMark } from "@/components/brand-mark";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { cn } from "@/lib/utils";
+import aiInterviewerAvatar from "@/assets/ai-interviewer.png.asset.json";
 
 type Mode = "text" | "voice" | "video";
 type Timer = "per_question" | "total";
@@ -545,7 +546,23 @@ function VideoAnswer({ draft, onTranscript }: { draft: string; onTranscript: (t:
   return (
     <div className="flex h-full flex-col gap-3">
       <div className="grid min-h-0 flex-1 gap-3 lg:grid-cols-2">
-        {/* User camera tile */}
+        {/* AI Interviewer avatar tile (left) */}
+        <div className="relative overflow-hidden rounded-xl border border-primary/30 bg-gradient-to-br from-violet-950/60 via-background to-fuchsia-950/40">
+          <img
+            src={aiInterviewerAvatar.url}
+            alt="AI Interviewer"
+            className="h-full w-full object-cover"
+          />
+          <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+          <div className="absolute bottom-3 left-3 rounded-md bg-black/60 px-2 py-1 text-[10px] font-medium uppercase tracking-wider text-white/90 backdrop-blur">
+            MockMate AI · Interviewer
+          </div>
+          <div className="absolute right-3 top-3 inline-flex items-center gap-1.5 rounded-md bg-emerald-500/20 px-2 py-1 text-[10px] font-medium uppercase tracking-wider text-emerald-300 ring-1 ring-emerald-500/40">
+            <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-400" /> Live
+          </div>
+        </div>
+
+        {/* User camera tile (right) */}
         <div className="relative overflow-hidden rounded-xl border border-border/60 bg-black/60">
           <video ref={videoRef} muted playsInline className="h-full w-full object-cover" />
           {!on && (
@@ -565,26 +582,6 @@ function VideoAnswer({ draft, onTranscript }: { draft: string; onTranscript: (t:
           )}
           <div className="absolute bottom-3 left-3 rounded-md bg-black/60 px-2 py-1 text-[10px] font-medium uppercase tracking-wider text-white/90 backdrop-blur">
             You
-          </div>
-        </div>
-
-        {/* AI Interviewer avatar tile */}
-        <div className="relative overflow-hidden rounded-xl border border-primary/30 bg-gradient-to-br from-violet-950/60 via-background to-fuchsia-950/40">
-          <div className="pointer-events-none absolute inset-0 bg-grid opacity-10" />
-          <div className="absolute inset-0 flex items-center justify-center">
-            <div className="relative">
-              <span className="absolute inset-0 -m-6 animate-ping rounded-full bg-primary/20" />
-              <span className="absolute inset-0 -m-3 rounded-full bg-primary/30 blur-2xl" />
-              <div className="relative grid h-28 w-28 place-items-center rounded-full bg-gradient-to-br from-primary to-fuchsia-500 shadow-2xl ring-2 ring-primary/40 sm:h-32 sm:w-32">
-                <Bot className="h-12 w-12 text-white sm:h-14 sm:w-14" />
-              </div>
-            </div>
-          </div>
-          <div className="absolute bottom-3 left-3 rounded-md bg-black/60 px-2 py-1 text-[10px] font-medium uppercase tracking-wider text-white/90 backdrop-blur">
-            MockMate AI
-          </div>
-          <div className="absolute right-3 top-3 inline-flex items-center gap-1.5 rounded-md bg-emerald-500/20 px-2 py-1 text-[10px] font-medium uppercase tracking-wider text-emerald-300 ring-1 ring-emerald-500/40">
-            <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-400" /> Live
           </div>
         </div>
       </div>
