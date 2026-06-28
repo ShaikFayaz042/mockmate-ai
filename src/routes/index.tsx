@@ -176,7 +176,7 @@ function Landing() {
                 <span className="h-2.5 w-2.5 rounded-full bg-chart-4/80" />
                 <span className="h-2.5 w-2.5 rounded-full bg-success/80" />
                 <span className="ml-3 font-mono text-xs text-muted-foreground">
-                  mockmate.app · interview · frontend · medium · Q 4 / 10
+                  mockmate.app · interview · senior-frontend
                 </span>
               </div>
               <div className="grid gap-4 p-6 md:grid-cols-[1fr_280px]">
@@ -200,9 +200,9 @@ function Landing() {
                 </div>
                 <div className="space-y-3">
                   {[
-                    { l: "Technical depth", v: 82 },
-                    { l: "Communication", v: 88 },
-                    { l: "Problem solving", v: 74 },
+                    { l: "Clarity", v: 88 },
+                    { l: "Structure", v: 74 },
+                    { l: "Depth", v: 81 },
                   ].map((s) => (
                     <div
                       key={s.l}
