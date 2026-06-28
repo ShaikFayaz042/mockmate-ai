@@ -551,9 +551,9 @@ function VideoAnswer({ draft, onTranscript }: { draft: string; onTranscript: (t:
           <img
             src={aiInterviewerAvatar.url}
             alt="AI Interviewer"
-            className="h-full w-full object-cover"
+            className="h-full w-full object-cover object-top"
           />
-          <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+          <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
           <div className="absolute bottom-3 left-3 rounded-md bg-black/60 px-2 py-1 text-[10px] font-medium uppercase tracking-wider text-white/90 backdrop-blur">
             MockMate AI · Interviewer
           </div>
