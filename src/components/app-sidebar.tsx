@@ -111,7 +111,7 @@ export function AppSidebar({ active, credits = 320 }: { active: SidebarKey; cred
             <Menu className="h-4 w-4" />
           </Button>
         </SheetTrigger>
-        <SheetContent side="left" className="flex w-72 flex-col border-r border-border/60 bg-background/95 px-5 py-6 backdrop-blur-xl">
+        <SheetContent side="right" className="flex w-72 flex-col border-l border-border/60 bg-background/95 px-5 py-6 backdrop-blur-xl">
           <SheetHeader className="sr-only">
             <SheetTitle>Navigation</SheetTitle>
           </SheetHeader>
