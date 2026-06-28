@@ -105,7 +105,7 @@ export function AppSidebar({ active, credits = 320 }: { active: SidebarKey; cred
           <Button
             variant="outline"
             size="icon"
-            className="fixed left-4 top-4 z-40 rounded-full border-border/60 bg-background/80 backdrop-blur-xl lg:hidden"
+            className="fixed right-4 top-4 z-40 rounded-full border-border/60 bg-background/80 backdrop-blur-xl lg:hidden"
             aria-label="Open navigation"
           >
             <Menu className="h-4 w-4" />
