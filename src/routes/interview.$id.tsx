@@ -1,4 +1,4 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
   ArrowLeft,
@@ -12,7 +12,6 @@ import {
   Play,
   Send,
   Sparkles,
-  SquarePen,
   Timer,
   User as UserIcon,
   Video,
