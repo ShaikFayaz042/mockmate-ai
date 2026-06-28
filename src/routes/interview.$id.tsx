@@ -158,13 +158,13 @@ function InterviewRoom() {
   };
 
   return (
-    <div className="relative min-h-screen bg-background text-foreground">
+    <div className="relative h-screen overflow-hidden bg-background text-foreground">
       <div className="pointer-events-none absolute inset-x-0 top-0 h-[360px] bg-mesh opacity-50" />
       <div className="pointer-events-none absolute inset-0 bg-grid opacity-20 [mask-image:radial-gradient(ellipse_at_top,black_15%,transparent_70%)]" />
 
-      <div className="relative mx-auto flex min-h-screen max-w-7xl flex-col px-4 py-5 sm:px-6">
+      <div className="relative mx-auto flex h-screen max-w-6xl flex-col px-4 py-3 sm:px-6 sm:py-4">
         {/* Top bar */}
-        <header className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-border/60 bg-background/60 px-4 py-3 backdrop-blur-xl">
+        <header className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-border/60 bg-background/60 px-4 py-2.5 backdrop-blur-xl">
           <div className="flex items-center gap-4">
             <BrandMark />
             <div className="hidden h-6 w-px bg-border/70 md:block" />
@@ -178,9 +178,17 @@ function InterviewRoom() {
             </div>
           </div>
           <div className="flex items-center gap-2">
+            {/* Question counter chip */}
+            <span className="inline-flex items-center gap-1.5 rounded-lg border border-primary/30 bg-primary/10 px-2.5 py-1.5 text-xs font-mono uppercase tracking-wider text-primary">
+              Q {idx + 1} / {total}
+            </span>
+            <div className="hidden sm:flex items-center gap-2 rounded-lg border border-border/60 bg-background/60 px-2.5 py-1.5 text-xs">
+              <Timer className={cn("h-3.5 w-3.5", remaining < 15 ? "text-rose-400" : "text-muted-foreground")} />
+              <span className="font-mono tabular-nums">{fmtTime(remaining)}</span>
+            </div>
             <button
               onClick={() => setPaused((p) => !p)}
-              className="inline-flex items-center gap-1.5 rounded-lg border border-border/60 bg-background/60 px-3 py-1.5 text-xs font-medium text-foreground/80 transition hover:border-border hover:text-foreground"
+              className="inline-flex items-center gap-1.5 rounded-lg border border-border/60 bg-background/60 px-2.5 py-1.5 text-xs font-medium text-foreground/80 transition hover:border-border hover:text-foreground"
             >
               {paused ? <Play className="h-3.5 w-3.5" /> : <Pause className="h-3.5 w-3.5" />}
               {paused ? "Resume" : "Pause"}
@@ -188,186 +196,89 @@ function InterviewRoom() {
             <ThemeToggle />
             <button
               onClick={() => setConfirmEnd(true)}
-              className="inline-flex items-center gap-1.5 rounded-lg border border-rose-500/30 bg-rose-500/10 px-3 py-1.5 text-xs font-medium text-rose-300 transition hover:bg-rose-500/20"
+              className="inline-flex items-center gap-1.5 rounded-lg border border-rose-500/30 bg-rose-500/10 px-2.5 py-1.5 text-xs font-medium text-rose-300 transition hover:bg-rose-500/20"
             >
-              <X className="h-3.5 w-3.5" /> End session
+              <X className="h-3.5 w-3.5" /> End
             </button>
           </div>
         </header>
 
-        {/* Progress + timer */}
-        <div className="mt-4 grid gap-4 lg:grid-cols-[1fr_auto]">
-          <div className="rounded-xl border border-border/60 bg-background/40 p-3 backdrop-blur">
-            <div className="flex items-center justify-between text-xs">
-              <span className="font-mono uppercase tracking-wider text-muted-foreground">
-                Question {idx + 1} / {total}
-              </span>
-              <span className="text-muted-foreground">{Math.round(progress)}%</span>
-            </div>
-            <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-muted/60">
-              <div
-                className="h-full bg-gradient-to-r from-primary to-primary/60 transition-all"
-                style={{ width: `${progress}%` }}
-              />
-            </div>
-          </div>
-          <div className="flex items-center gap-3 rounded-xl border border-border/60 bg-background/40 px-4 py-3 backdrop-blur">
-            <Timer className={cn("h-4 w-4", remaining < 15 ? "text-rose-400" : "text-muted-foreground")} />
-            <div className="font-mono text-lg tabular-nums">
-              {fmtTime(remaining)}
-            </div>
-            <div className="hidden text-[10px] uppercase tracking-wider text-muted-foreground sm:block">
-              {perQuestion ? "per question" : "total"}
-            </div>
-            <div className="ml-2 hidden h-1.5 w-24 overflow-hidden rounded-full bg-muted/60 sm:block">
-              <div
-                className={cn(
-                  "h-full transition-all",
-                  pct > 80 ? "bg-rose-500" : pct > 60 ? "bg-amber-500" : "bg-emerald-500",
-                )}
-                style={{ width: `${pct}%` }}
-              />
-            </div>
-          </div>
+        {/* Progress bar */}
+        <div className="mt-3 h-1 overflow-hidden rounded-full bg-muted/60">
+          <div
+            className="h-full bg-gradient-to-r from-primary to-primary/60 transition-all"
+            style={{ width: `${progress}%` }}
+          />
         </div>
 
         {/* Main */}
-        <main className="mt-4 grid flex-1 gap-4 lg:grid-cols-[1fr_320px]">
-          <section className="flex flex-col rounded-2xl border border-border/60 bg-background/60 backdrop-blur-xl">
-            {/* Interviewer question */}
-            <div className="border-b border-border/60 p-5 sm:p-6">
-              <div className="flex items-start gap-3">
-                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary/15 text-primary ring-1 ring-primary/30">
-                  <Sparkles className="h-4 w-4" />
-                </div>
-                <div className="min-w-0">
-                  <div className="text-[11px] font-mono uppercase tracking-wider text-muted-foreground">
-                    Interviewer · MockMate AI
-                  </div>
-                  <p className="mt-1 text-base leading-relaxed text-foreground sm:text-lg">
-                    {thinking ? (
-                      <span className="inline-flex items-center gap-2 text-muted-foreground">
-                        <Loader2 className="h-4 w-4 animate-spin" /> Preparing the next question…
-                      </span>
-                    ) : (
-                      questions[idx]
-                    )}
-                  </p>
-                </div>
+        <main className="mt-3 flex min-h-0 flex-1 flex-col rounded-2xl border border-border/60 bg-background/60 backdrop-blur-xl">
+          {/* Interviewer question */}
+          <div className="border-b border-border/60 p-4 sm:p-5">
+            <div className="flex items-start gap-3">
+              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary/15 text-primary ring-1 ring-primary/30">
+                <Sparkles className="h-4 w-4" />
               </div>
-            </div>
-
-            {/* Answer area: differs per mode */}
-            <div className="flex-1 p-5 sm:p-6">
-              {mode === "text" && (
-                <TextAnswer draft={draft} onChange={setDraft} disabled={paused || thinking} />
-              )}
-              {mode === "voice" && (
-                <VoiceAnswer onTranscript={(t) => setDraft((d) => (d ? d + " " : "") + t)} draft={draft} />
-              )}
-              {mode === "video" && (
-                <VideoAnswer onTranscript={(t) => setDraft((d) => (d ? d + " " : "") + t)} draft={draft} />
-              )}
-            </div>
-
-            {/* Footer actions */}
-            <div className="flex flex-wrap items-center justify-between gap-3 border-t border-border/60 px-5 py-4 sm:px-6">
-              <button
-                onClick={goPrev}
-                disabled={idx === 0}
-                className="inline-flex items-center gap-1.5 rounded-lg border border-border/60 bg-background/60 px-3 py-2 text-sm text-foreground/80 transition hover:border-border hover:text-foreground disabled:cursor-not-allowed disabled:opacity-40"
-              >
-                <ArrowLeft className="h-4 w-4" /> Previous
-              </button>
-              <div className="text-xs text-muted-foreground">
-                {draft.trim().length > 0
-                  ? `${draft.trim().split(/\s+/).length} words drafted`
-                  : "Take your time — quality over speed."}
-              </div>
-              <Button onClick={goNext} disabled={paused || thinking}>
-                {idx + 1 >= total ? (
-                  <>
-                    <CheckCircle2 className="mr-1.5 h-4 w-4" /> Finish
-                  </>
-                ) : (
-                  <>
-                    <Send className="mr-1.5 h-4 w-4" /> Submit & continue
-                    <ArrowRight className="ml-1.5 h-4 w-4" />
-                  </>
-                )}
-              </Button>
-            </div>
-          </section>
-
-          {/* Side panel */}
-          <aside className="flex flex-col gap-4">
-            <div className="rounded-2xl border border-border/60 bg-background/60 p-4 backdrop-blur-xl">
-              <div className="text-[11px] font-mono uppercase tracking-wider text-muted-foreground">
-                Session
-              </div>
-              <dl className="mt-3 space-y-2 text-sm">
-                <Row label="Mode" value={mode} mono />
-                <Row label="Category" value={categoryLabel[category] ?? category} />
-                <Row label="Difficulty" value={difficulty} />
-                <Row label="Questions" value={`${idx + 1} / ${total}`} />
-                <Row label="Timer" value={perQuestion ? "Per question" : "Total"} />
-              </dl>
-            </div>
-
-            <div className="rounded-2xl border border-border/60 bg-background/60 p-4 backdrop-blur-xl">
-              <div className="flex items-center justify-between">
+              <div className="min-w-0">
                 <div className="text-[11px] font-mono uppercase tracking-wider text-muted-foreground">
-                  Live tips
+                  Interviewer · MockMate AI
                 </div>
-                <SquarePen className="h-3.5 w-3.5 text-muted-foreground" />
-              </div>
-              <ul className="mt-3 space-y-2 text-xs text-muted-foreground">
-                <li>• Use the STAR method for behavioral prompts.</li>
-                <li>• State assumptions before designing.</li>
-                <li>• Think out loud — clarity beats correctness.</li>
-              </ul>
-            </div>
-
-            <div className="rounded-2xl border border-border/60 bg-background/60 p-4 backdrop-blur-xl">
-              <div className="text-[11px] font-mono uppercase tracking-wider text-muted-foreground">
-                Roadmap
-              </div>
-              <ol className="mt-3 space-y-1.5 text-xs">
-                {questions.map((_, i) => (
-                  <li
-                    key={i}
-                    className={cn(
-                      "flex items-center gap-2 rounded-md px-2 py-1.5",
-                      i === idx && "bg-primary/10 text-foreground",
-                      i < idx && "text-muted-foreground",
-                      i > idx && "text-muted-foreground/60",
-                    )}
-                  >
-                    <span
-                      className={cn(
-                        "flex h-5 w-5 items-center justify-center rounded-full border text-[10px] font-mono",
-                        i === idx
-                          ? "border-primary/60 bg-primary/20 text-primary"
-                          : i < idx
-                            ? "border-emerald-500/40 bg-emerald-500/10 text-emerald-400"
-                            : "border-border/60",
-                      )}
-                    >
-                      {i < idx ? "✓" : i + 1}
+                <p className="mt-1 text-base leading-relaxed text-foreground sm:text-lg">
+                  {thinking ? (
+                    <span className="inline-flex items-center gap-2 text-muted-foreground">
+                      <Loader2 className="h-4 w-4 animate-spin" /> Preparing the next question…
                     </span>
-                    Question {i + 1}
-                  </li>
-                ))}
-              </ol>
+                  ) : (
+                    questions[idx]
+                  )}
+                </p>
+              </div>
             </div>
-          </aside>
-        </main>
+          </div>
 
-        <footer className="mt-6 flex items-center justify-between text-xs text-muted-foreground">
-          <Link to="/dashboard" className="hover:text-foreground">← Back to dashboard</Link>
-          <span>Stay focused. You've got this.</span>
-        </footer>
+          {/* Answer area: differs per mode */}
+          <div className="min-h-0 flex-1 overflow-hidden p-4 sm:p-5">
+            {mode === "text" && (
+              <TextAnswer draft={draft} onChange={setDraft} disabled={paused || thinking} />
+            )}
+            {mode === "voice" && (
+              <VoiceAnswer onTranscript={(t) => setDraft((d) => (d ? d + " " : "") + t)} draft={draft} />
+            )}
+            {mode === "video" && (
+              <VideoAnswer onTranscript={(t) => setDraft((d) => (d ? d + " " : "") + t)} draft={draft} />
+            )}
+          </div>
+
+          {/* Footer actions */}
+          <div className="flex flex-wrap items-center justify-between gap-3 border-t border-border/60 px-4 py-3 sm:px-5">
+            <button
+              onClick={goPrev}
+              disabled={idx === 0}
+              className="inline-flex items-center gap-1.5 rounded-lg border border-border/60 bg-background/60 px-3 py-2 text-sm text-foreground/80 transition hover:border-border hover:text-foreground disabled:cursor-not-allowed disabled:opacity-40"
+            >
+              <ArrowLeft className="h-4 w-4" /> Previous
+            </button>
+            <div className="hidden sm:block text-xs text-muted-foreground">
+              {draft.trim().length > 0
+                ? `${draft.trim().split(/\s+/).length} words drafted`
+                : "Take your time — quality over speed."}
+            </div>
+            <Button onClick={goNext} disabled={paused || thinking}>
+              {idx + 1 >= total ? (
+                <>
+                  <CheckCircle2 className="mr-1.5 h-4 w-4" /> Finish
+                </>
+              ) : (
+                <>
+                  <Send className="mr-1.5 h-4 w-4" /> Submit & continue
+                  <ArrowRight className="ml-1.5 h-4 w-4" />
+                </>
+              )}
+            </Button>
+          </div>
+        </main>
       </div>
+
 
       {/* End confirm */}
       {confirmEnd && (
