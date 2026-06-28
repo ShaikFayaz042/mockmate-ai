@@ -137,18 +137,18 @@ function Landing() {
         <div className="relative mx-auto max-w-5xl text-center">
           <span className="inline-flex items-center gap-2 rounded-full border border-border/70 bg-surface/70 px-3 py-1 text-xs font-medium text-muted-foreground backdrop-blur">
             <span className="h-1.5 w-1.5 rounded-full bg-primary" />
-            Voice mode with dual-orb interface is live
+            Now with realtime voice mode
           </span>
 
           <h1 className="mt-6 text-balance text-4xl font-semibold tracking-tight text-foreground sm:text-6xl md:text-7xl">
-            Mock interviews that feel real.
+            Interviews that feel real.
             <br />
-            <span className="text-gradient-primary">Reports that show you what to fix.</span>
+            <span className="text-gradient-primary">Feedback that moves the needle.</span>
           </h1>
 
           <p className="mx-auto mt-6 max-w-2xl text-balance text-base text-muted-foreground sm:text-lg">
-            MockMate is your AI interviewer across text, voice, and video. Pick a role and difficulty,
-            run a focused session, and get a scored report — strengths, gaps, and the exact next reps.
+            MockMate is your personal AI interviewer. Practice in text, voice, or video — and walk
+            away with the exact reps and feedback you need to land the offer.
           </p>
 
           <div className="mt-9 flex flex-wrap items-center justify-center gap-3">
@@ -158,7 +158,7 @@ function Landing() {
               </Link>
             </Button>
             <Button asChild size="lg" variant="outline" className="rounded-full">
-              <a href="#how">See how it works</a>
+              <a href="#how">How it works</a>
             </Button>
           </div>
 
