@@ -68,7 +68,7 @@ export function AppSidebar({ active, credits = 320 }: { active: SidebarKey; cred
           </Button>
         </div>
         <button
-          onClick={() => toast("Logged out")}
+          onClick={() => toast("Logged out (demo)")}
           className="flex w-full items-center gap-2 rounded-lg px-2 py-2 text-sm text-muted-foreground hover:bg-muted hover:text-foreground"
         >
           <LogOut className="h-4 w-4" /> Log out
