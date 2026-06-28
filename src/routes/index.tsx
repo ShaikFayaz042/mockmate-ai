@@ -127,6 +127,8 @@ const PLANS = [
 ];
 
 function Landing() {
+  const { user, hydrated } = useAuth();
+  if (hydrated && user) return <LandingAuthed user={user} />;
   return (
     <div className="relative min-h-screen overflow-hidden bg-background">
       <SiteNavbar />
