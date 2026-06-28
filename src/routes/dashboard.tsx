@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   ArrowUpRight,
   Award,
@@ -8,7 +8,10 @@ import {
   Coins,
   FileText,
   Mic,
+  Minus,
+  Plus,
   Shuffle,
+  Sparkles,
   Trophy,
   Users,
   Video,
@@ -18,6 +21,10 @@ import { toast } from "sonner";
 import { AppSidebar } from "@/components/app-sidebar";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { ErrorBoundary } from "@/components/error-boundary";
+import { EmptyState } from "@/components/empty-state";
 import { cn } from "@/lib/utils";
 
 
