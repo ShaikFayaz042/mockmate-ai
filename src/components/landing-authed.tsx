@@ -64,10 +64,10 @@ export function LandingAuthed({ user }: { user: FakeUser }) {
 
       <main className="mx-auto max-w-6xl px-4 pb-24 pt-28 sm:px-6 sm:pt-32">
         {/* Hero */}
-        <section className="mb-10 grid grid-cols-[minmax(0,1fr)_auto] items-end gap-4 sm:flex sm:flex-wrap sm:justify-between">
+        <section className="mb-10 flex flex-col gap-5 sm:flex-row sm:flex-wrap sm:items-end sm:justify-between sm:gap-4">
           <div className="min-w-0">
             <p className="font-mono text-xs uppercase tracking-widest text-muted-foreground">Welcome back</p>
-            <h1 className="mt-1 truncate text-3xl font-semibold tracking-tight sm:text-4xl">
+            <h1 className="mt-1 text-3xl font-semibold tracking-tight sm:text-4xl">
               Hey, {user.name.split(" ")[0]} 👋
             </h1>
             <p className="mt-1 text-sm text-muted-foreground">
@@ -75,10 +75,10 @@ export function LandingAuthed({ user }: { user: FakeUser }) {
             </p>
           </div>
           <div className="flex shrink-0 items-center gap-2">
-            <Button asChild variant="outline" className="rounded-full">
+            <Button asChild variant="outline" size="sm" className="flex-1 rounded-full sm:flex-none">
               <Link to="/my-interviews">History</Link>
             </Button>
-            <Button asChild className="rounded-full shadow-glow">
+            <Button asChild size="sm" className="flex-1 rounded-full shadow-glow sm:flex-none">
               <Link to="/dashboard">
                 <LayoutDashboard className="mr-1.5 h-4 w-4" /> Go to dashboard
               </Link>
@@ -120,12 +120,12 @@ export function LandingAuthed({ user }: { user: FakeUser }) {
                 +12% WoW
               </span>
             </div>
-            <div className="flex h-44 items-end gap-2 sm:gap-4">
+            <div className="flex h-44 items-end gap-2 sm:gap-3">
               {PROGRESS.map((p) => {
                 const h = Math.max(8, Math.round((p.score / max) * 100));
                 return (
-                  <div key={p.day} className="flex min-w-0 flex-1 flex-col items-center gap-2">
-                    <div className="relative w-full overflow-hidden rounded-md bg-muted/40" style={{ height: "100%" }}>
+                  <div key={p.day} className="flex h-full min-w-0 flex-1 flex-col items-center justify-end gap-2">
+                    <div className="relative w-full flex-1 overflow-hidden rounded-md bg-muted/40">
                       <div
                         className="absolute inset-x-0 bottom-0 rounded-md bg-gradient-to-t from-primary to-primary/40 transition-all"
                         style={{ height: `${h}%` }}
